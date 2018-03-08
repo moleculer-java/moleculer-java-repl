@@ -46,11 +46,15 @@ import services.moleculer.service.Name;
 /**
  * Local interactive console (uses System.in and System.out). To start console,
  * type<br>
- * <br>
- * ServiceBroker broker = ServiceBroker.builder().build();<br>
- * broker.start();<br>
+ * <pre>
+ * ServiceBroker broker = ServiceBroker.builder().build();
+ * broker.start();
  * broker.repl();
- * 
+ * </pre>
+ * Start telnet-based console:
+ * <pre>
+ * broker.repl(false);
+ * </pre>
  * @see RemoteRepl
  */
 @Name("Local REPL Console")
