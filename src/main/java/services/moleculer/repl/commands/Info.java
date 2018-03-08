@@ -178,7 +178,6 @@ public class Info extends Command {
 		addType(table, "Event bus", broker.getConfig().getEventbus());
 		addType(table, "System monitor", broker.getConfig().getMonitor());
 		addType(table, "Service registry", broker.getConfig().getServiceRegistry());
-		addType(table, "REPL console", broker.getConfig().getRepl());
 		addType(table, "UID generator", broker.getConfig().getUidGenerator());
 		table.addRow("", "");
 
@@ -194,10 +193,12 @@ public class Info extends Command {
 			addType(table, "Serializer", s);
 			try {
 				if (s != null && "JSON".equalsIgnoreCase(s.getFormat())) {
-					String readers = getAPIs(TreeReaderRegistry.getReader("json"), TreeReaderRegistry.getReadersByFormat("json"));
-					String writers = getAPIs(TreeWriterRegistry.getWriter("json"), TreeWriterRegistry.getWritersByFormat("json"));
+					String readers = getAPIs(TreeReaderRegistry.getReader("json"),
+							TreeReaderRegistry.getReadersByFormat("json"));
+					String writers = getAPIs(TreeWriterRegistry.getWriter("json"),
+							TreeWriterRegistry.getWritersByFormat("json"));
 					if (readers.equals(writers)) {
-						table.addRow("JSON implementations", readers);			
+						table.addRow("JSON implementations", readers);
 					} else {
 						table.addRow("JSON readers", readers);
 						table.addRow("JSON writers", writers);
@@ -233,7 +234,7 @@ public class Info extends Command {
 		}
 		return list.toString();
 	}
-	
+
 	protected void addType(TextTable table, String title, Object component) {
 		if (component == null) {
 			table.addRow(title, "<none>");
