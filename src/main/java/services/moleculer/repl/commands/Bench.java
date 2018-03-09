@@ -1,15 +1,9 @@
 /**
- * MOLECULER MICROSERVICES FRAMEWORK<br>
- * <br>
- * This project is based on the idea of Moleculer Microservices
- * Framework for NodeJS (https://moleculer.services). Special thanks to
- * the Moleculer's project owner (https://github.com/icebob) for the
- * consultations.<br>
- * <br>
  * THIS SOFTWARE IS LICENSED UNDER MIT LICENSE.<br>
  * <br>
  * Copyright 2017 Andras Berkes [andras.berkes@programmer.net]<br>
- * <br>
+ * Based on Moleculer Framework for NodeJS [https://moleculer.services].
+ * <br><br>
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -92,7 +86,7 @@ public class Bench extends Command {
 		long time = flags.get("time", 0);
 		String nodeID = flags.get("nodeID", "");
 		int lastIndex = flags.get("lastIndex", 0);
-		int max = flags.get("max", 100);		
+		int max = flags.get("max", 100);
 		Tree params = getPayload(lastIndex + 1, parameters);
 
 		if (num < 1 && time < 1) {
@@ -118,7 +112,7 @@ public class Bench extends Command {
 		// Start benchmark...
 		String msg = num > 0 ? num + " times" : "for " + formatNamoSec(time * 1000000000);
 		out.println("Calling service " + msg + ", please wait...");
-		
+
 		long req, res;
 		while (!data.finished.get()) {
 			req = data.reqCount.get();
@@ -129,7 +123,7 @@ public class Bench extends Command {
 				Thread.sleep(1);
 			}
 		}
-		
+
 		if (num == 0 && time > 0 && time < 10) {
 			Thread.sleep(500L + (1000L * time));
 		} else {
@@ -139,7 +133,7 @@ public class Bench extends Command {
 
 	protected void doRequest(ServiceBroker broker, BenchData data) {
 		data.reqCount.incrementAndGet();
-		long startTime = System.nanoTime();		
+		long startTime = System.nanoTime();
 		broker.call(data.action, data.params, data.opts).then(res -> {
 			handleResponse(broker, data, startTime, null);
 		}).catchError(cause -> {
