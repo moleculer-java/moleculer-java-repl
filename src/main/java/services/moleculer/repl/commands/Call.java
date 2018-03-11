@@ -58,7 +58,7 @@ public class Call extends Command {
 		String name = parameters[0];
 		Tree params = getPayload(parameters);
 		out.println(">> Call '" + name + "' with params: " + params.toString(false));
-		Tree rsp = broker.call(name, params).toCompletableFuture().get();
+		Tree rsp = broker.call(name, params).waitFor();
 		out.println("Response:");
 		if (rsp == null) {
 			out.println("'null' response");

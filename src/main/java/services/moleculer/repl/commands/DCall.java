@@ -29,7 +29,7 @@ import java.io.PrintStream;
 
 import io.datatree.Tree;
 import services.moleculer.ServiceBroker;
-import services.moleculer.context.CallingOptions;
+import services.moleculer.context.CallOptions;
 import services.moleculer.repl.Command;
 import services.moleculer.service.Name;
 
@@ -60,7 +60,7 @@ public class DCall extends Command {
 		String name = parameters[1];
 		Tree params = getPayload(2, parameters);
 		out.println(">> Call '" + name + "' on '" + nodeID + "' with params: " + params.toString(false));
-		Tree rsp = broker.call(name, params, CallingOptions.nodeID(nodeID)).toCompletableFuture().get();
+		Tree rsp = broker.call(name, params, CallOptions.nodeID(nodeID)).waitFor();
 		out.println("Response:");
 		if (rsp == null) {
 			out.println("'null' response");

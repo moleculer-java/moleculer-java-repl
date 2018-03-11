@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import io.datatree.Tree;
 import services.moleculer.ServiceBroker;
-import services.moleculer.context.CallingOptions;
+import services.moleculer.context.CallOptions;
 import services.moleculer.repl.Command;
 import services.moleculer.service.Name;
 
@@ -95,9 +95,9 @@ public class Bench extends Command {
 		if (max < 1) {
 			max = 1;
 		}
-		CallingOptions.Options opts = null;
+		CallOptions.Options opts = null;
 		if (nodeID != null && !nodeID.isEmpty()) {
-			opts = CallingOptions.nodeID(nodeID);
+			opts = CallOptions.nodeID(nodeID);
 		}
 
 		// Start timer
@@ -245,7 +245,7 @@ public class Bench extends Command {
 		protected final long startTime;
 
 		protected final ServiceBroker broker;
-		protected final CallingOptions.Options opts;
+		protected final CallOptions.Options opts;
 		protected final PrintStream out;
 		protected final String action;
 		protected final Tree params;
@@ -262,7 +262,7 @@ public class Bench extends Command {
 		protected final AtomicBoolean timeout = new AtomicBoolean();
 		protected final AtomicBoolean finished = new AtomicBoolean();
 
-		protected BenchData(ServiceBroker broker, CallingOptions.Options opts, PrintStream out, String action,
+		protected BenchData(ServiceBroker broker, CallOptions.Options opts, PrintStream out, String action,
 				Tree params, long num) {
 			this.broker = broker;
 			this.opts = opts;
