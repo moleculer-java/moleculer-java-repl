@@ -33,7 +33,6 @@ import services.moleculer.eventbus.Subscribe;
 import services.moleculer.service.Action;
 import services.moleculer.service.Name;
 import services.moleculer.service.Service;
-import services.moleculer.service.Version;
 
 public class Sample {
 
@@ -60,7 +59,6 @@ public class Sample {
 				};
 
 				@Name("test")
-				@Version("1")
 				public Action test = ctx -> {
 
 					return ctx.params.get("a", 0) + ctx.params.get("b", 0);
