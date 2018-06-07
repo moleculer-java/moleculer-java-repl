@@ -25,7 +25,7 @@
  */
 package services.moleculer.repl.commands;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -62,7 +62,7 @@ public class Env extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		TextTable table = new TextTable("Key", "Value");
 
 		// Print long keys

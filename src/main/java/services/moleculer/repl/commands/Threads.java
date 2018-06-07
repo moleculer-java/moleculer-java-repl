@@ -25,11 +25,17 @@
  */
 package services.moleculer.repl.commands;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import services.moleculer.ServiceBroker;
 import services.moleculer.repl.Command;
 import services.moleculer.service.Name;
+
+import static services.moleculer.repl.ColorWriter.YELLOW;
+import static services.moleculer.repl.ColorWriter.GRAY;
+import static services.moleculer.repl.ColorWriter.GREEN;
+import static services.moleculer.repl.ColorWriter.WHITE;
+import static services.moleculer.repl.ColorWriter.CYAN;
 
 /**
  * Lists hierarchy of threads.
@@ -59,7 +65,7 @@ public class Threads extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		ThreadGroup mainGroup = Thread.currentThread().getThreadGroup();
 		while (mainGroup.getParent() != null) {
 			mainGroup = mainGroup.getParent();
@@ -86,9 +92,11 @@ public class Threads extends Command {
 
 	protected void printThreadGroup(StringBuilder tmp, ThreadGroup group, int tabs) throws Exception {
 		printChars(tmp, ' ', tabs);
+		tmp.append(YELLOW);
 		tmp.append("Group: ");
 		tmp.append(group.getName());
 		if (group.isDaemon()) {
+			tmp.append(GRAY);
 			tmp.append(" (Daemon)");
 		}
 		tmp.append(newLine);
@@ -100,6 +108,11 @@ public class Threads extends Command {
 			Thread thread = subThreads[n];
 			String name = thread.getName();
 			printChars(tmp, ' ', tabs);
+			if (thread.isDaemon() || name.equals("DestroyJavaVM")) {
+				tmp.append(GRAY);
+			} else {
+				tmp.append(GREEN);
+			}
 			tmp.append(Integer.toString(thread.getPriority()));
 			tmp.append(' ');
 			tmp.append(name);
@@ -108,6 +121,7 @@ public class Threads extends Command {
 				tmp.append(thread.getClass().getName());
 				tmp.append('>');
 			}
+			tmp.append(GRAY);
 			if (thread.isDaemon()) {
 				tmp.append(" (Daemon)");
 			}

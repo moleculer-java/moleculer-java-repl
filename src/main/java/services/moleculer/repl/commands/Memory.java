@@ -25,7 +25,7 @@
  */
 package services.moleculer.repl.commands;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import services.moleculer.ServiceBroker;
 import services.moleculer.service.Name;
@@ -47,16 +47,16 @@ public class Memory extends Gc {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		Runtime runtime = Runtime.getRuntime();
 		long free = runtime.freeMemory();
 		long total = runtime.totalMemory();
 		long used = total - free;
 		out.println("Memory usage:");
 		out.println();
-		printMemory(out, "  total - ", total, total, 25);
-		printMemory(out, "  used  - ", used, total, 25);
-		printMemory(out, "  free  - ", free, total, 25);
+		printMemory(out, "  total - ", total, total, 27);
+		printMemory(out, "  used  - ", used, total, 27);
+		printMemory(out, "  free  - ", free, total, 27);
 	}
 
 }

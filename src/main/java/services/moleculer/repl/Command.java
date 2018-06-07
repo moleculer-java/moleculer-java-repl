@@ -25,7 +25,7 @@
  */
 package services.moleculer.repl;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.LinkedList;
 
 import io.datatree.Tree;
@@ -50,7 +50,7 @@ public abstract class Command {
 
 	public abstract int getNumberOfRequiredParameters();
 
-	public abstract void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception;
+	public abstract void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception;
 
 	// --- OPTION HANDLING ---
 

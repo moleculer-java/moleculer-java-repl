@@ -25,10 +25,14 @@
  */
 package services.moleculer.repl.commands;
 
+import static services.moleculer.repl.ColorWriter.GRAY;
+import static services.moleculer.repl.ColorWriter.GREEN;
+import static services.moleculer.repl.ColorWriter.WHITE;
+import static services.moleculer.repl.ColorWriter.YELLOW;
 import static services.moleculer.util.CommonUtils.formatNamoSec;
 import static services.moleculer.util.CommonUtils.formatNumber;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ExecutorService;
@@ -76,7 +80,7 @@ public class Bench extends Command {
 	protected ExecutorService executor;
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		executor = broker.getConfig().getExecutor();
 
 		// Parse parameters
@@ -111,7 +115,9 @@ public class Bench extends Command {
 
 		// Start benchmark...
 		String msg = num > 0 ? num + " times" : "for " + formatNamoSec(time * 1000000000);
-		out.println("Calling service " + msg + ", please wait...");
+		out.println(YELLOW + ">> Calling '" + action + "' " + msg + " with params: "
+				+ params.toString("colorized-json", false));
+		out.println();
 
 		long req, res;
 		while (!data.finished.get()) {
@@ -196,7 +202,7 @@ public class Bench extends Command {
 	}
 
 	protected void printResult(BenchData data) {
-		PrintStream out = data.out;
+		PrintWriter out = data.out;
 		try {
 			long now = System.nanoTime();
 
@@ -223,17 +229,20 @@ public class Bench extends Command {
 			} else {
 				errStr = "0 error";
 			}
-			out.println("Benchmark results:");
-			out.println(
-					"  " + formatNumber(data.resCount) + " requests in " + formatNamoSec(total) + ", " + errStr);
-			out.println("  Requests per second: " + formatNumber(reqPer));
+			out.println(GREEN + "Benchmark results:");
+			out.println();
+			out.println("  " + WHITE + formatNumber(data.resCount) + " requests in " + formatNamoSec(total) + ", "
+					+ GRAY + errStr);
+			out.println();
+			out.println("  Requests per second: " + WHITE + formatNumber(reqPer));
+			out.println();
 			out.println("  Latency: ");
-			out.println("    Average: " + formatNamoSec(dur) + " (" + inSec.toPlainString() + " second)");
+			out.println("    Average: " + WHITE + formatNamoSec(dur) + " (" + inSec.toPlainString() + " second)");
 			if (data.minTime.get() != Long.MAX_VALUE) {
-				out.println("    Minimum: " + formatNamoSec(data.minTime.get()));
+				out.println("    Minimum: " + WHITE + formatNamoSec(data.minTime.get()));
 			}
 			if (data.maxTime.get() != Long.MIN_VALUE) {
-				out.println("    Maximum: " + formatNamoSec(data.maxTime.get()));
+				out.println("    Maximum: " + WHITE + formatNamoSec(data.maxTime.get()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace(out);
@@ -246,7 +255,7 @@ public class Bench extends Command {
 
 		protected final ServiceBroker broker;
 		protected final CallOptions.Options opts;
-		protected final PrintStream out;
+		protected final PrintWriter out;
 		protected final String action;
 		protected final Tree params;
 		protected final long num;
@@ -262,8 +271,8 @@ public class Bench extends Command {
 		protected final AtomicBoolean timeout = new AtomicBoolean();
 		protected final AtomicBoolean finished = new AtomicBoolean();
 
-		protected BenchData(ServiceBroker broker, CallOptions.Options opts, PrintStream out, String action,
-				Tree params, long num) {
+		protected BenchData(ServiceBroker broker, CallOptions.Options opts, PrintWriter out, String action, Tree params,
+				long num) {
 			this.broker = broker;
 			this.opts = opts;
 			this.out = out;

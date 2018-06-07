@@ -25,7 +25,7 @@
  */
 package services.moleculer.repl.commands;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import services.moleculer.ServiceBroker;
 import services.moleculer.repl.Command;
@@ -53,7 +53,7 @@ public class Close extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 
 		// Do nothing
 	}

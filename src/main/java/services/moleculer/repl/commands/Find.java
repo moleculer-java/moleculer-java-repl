@@ -25,7 +25,7 @@
  */
 package services.moleculer.repl.commands;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLDecoder;
 
@@ -57,7 +57,7 @@ public class Find extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		String name = parameters[0];
 		int index = name.indexOf('.');
 		if (index != -1) {

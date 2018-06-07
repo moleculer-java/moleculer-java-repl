@@ -25,9 +25,13 @@
  */
 package services.moleculer.repl.commands;
 
+import static services.moleculer.repl.ColorWriter.MAGENTA;
 import static services.moleculer.util.CommonUtils.getNodeInfos;
 
-import java.io.PrintStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,6 +52,8 @@ public class Nodes extends Command {
 	public Nodes() {
 		option("details, -d", "detailed list");
 		option("all, -a", "list all (offline) nodes");
+		option("raw", "print service registry as JSON");
+		option("save [filename], -a", "save service registry to JSON file");
 	}
 
 	@Override
@@ -66,12 +72,14 @@ public class Nodes extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 
 		// Parse parameters
 		List<String> params = Arrays.asList(parameters);
 		boolean all = params.contains("--all") || params.contains("-a");
 		boolean details = params.contains("--details") || params.contains("-d");
+		boolean raw = params.contains("--raw");
+		boolean save = params.contains("--save");
 		boolean telnet = params.contains("telnet");
 
 		// Collect data
@@ -79,6 +87,36 @@ public class Nodes extends Command {
 		Tree infos = getNodeInfos(broker, transporter);
 		String localNodeID = broker.getNodeID();
 
+		// Raw print or save function
+		if (raw || save) {
+			ArrayList<Object> array = new ArrayList<>(infos.size());
+			for (Tree info : infos) {
+				array.add(info.asObject());
+			}
+			String json = new Tree(array).toString("colorized-json", true, true);
+			if (raw) {
+				out.println(json);
+			} else {
+				String filePath = parameters[parameters.length - 1];
+				if (filePath.startsWith("--")) {
+					filePath = System.getProperty("user.home", "") + "/nodes.json";
+				}
+				FileOutputStream os = null;
+				try {
+					File file = new File(filePath);
+					os = new FileOutputStream(file);
+					os.write(json.getBytes(StandardCharsets.UTF_8));
+					os.flush();
+					out.println(MAGENTA + ">> Node list has been saved to '" + file.getCanonicalPath() + "' file.");
+				} finally {
+					if (os != null) {
+						os.close();
+					}
+				}
+			}
+			return;
+		}
+		
 		// Create table
 		TextTable table;
 		if (telnet) {

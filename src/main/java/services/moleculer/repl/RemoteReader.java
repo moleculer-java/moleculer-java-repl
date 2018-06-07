@@ -28,6 +28,7 @@ package services.moleculer.repl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -67,7 +68,7 @@ public class RemoteReader {
 	protected boolean maskPassword;
 	protected boolean loggedOn;
 	protected byte skip;
-
+	
 	// --- CONSTRUCTOR ---
 
 	public RemoteReader(RemoteRepl remoteRepl, SocketChannel channel, SelectionKey key, boolean authenticated,
@@ -342,15 +343,17 @@ public class RemoteReader {
 
 		// Invoke processor
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PrintStream out = new PrintStream(baos, true, "US-ASCII");
+		PrintStream printStream = new PrintStream(baos, true, "US-ASCII");
+		ColorWriter colorWriter = new ColorWriter(printStream);
+		PrintWriter printWriter = new PrintWriter(colorWriter, true);
 		if ("r".equalsIgnoreCase(command) || "repeat".equalsIgnoreCase(command)) {
 			command = lastCommand;
 		}
 		if (command.equals("help") || command.startsWith("nodes") || command.startsWith("actions")) {
 			command += " telnet";
 		}
-		remoteRepl.onCommand(out, command);
-		out.print("mol $ ");
+		remoteRepl.onCommand(printWriter, command);
+		printWriter.print("mol $ ");
 		lastCommand = command;
 
 		// Send back response

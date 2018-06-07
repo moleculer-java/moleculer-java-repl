@@ -27,7 +27,7 @@ package services.moleculer.repl.commands;
 
 import static services.moleculer.util.CommonUtils.getNodeInfos;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -71,7 +71,7 @@ public class Events extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 
 		// Parse parameters
 		List<String> params = Arrays.asList(parameters);

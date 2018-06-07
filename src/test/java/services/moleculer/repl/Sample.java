@@ -73,7 +73,7 @@ public class Sample {
 			});
 
 			broker.start();
-			broker.repl();
+			broker.repl(false);
 
 		} catch (Exception e) {
 			e.printStackTrace();

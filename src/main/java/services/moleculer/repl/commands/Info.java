@@ -25,10 +25,16 @@
  */
 package services.moleculer.repl.commands;
 
+import static services.moleculer.repl.ColorWriter.CYAN;
+import static services.moleculer.repl.ColorWriter.GRAY;
+import static services.moleculer.repl.ColorWriter.GREEN;
+import static services.moleculer.repl.ColorWriter.MAGENTA;
+import static services.moleculer.repl.ColorWriter.WHITE;
+import static services.moleculer.repl.ColorWriter.YELLOW;
 import static services.moleculer.util.CommonUtils.getHostName;
 import static services.moleculer.util.CommonUtils.nameOf;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -42,10 +48,14 @@ import io.datatree.Tree;
 import io.datatree.dom.TreeReaderRegistry;
 import io.datatree.dom.TreeWriterRegistry;
 import services.moleculer.ServiceBroker;
+import services.moleculer.breaker.CircuitBreaker;
+import services.moleculer.config.ServiceBrokerConfig;
 import services.moleculer.repl.Command;
 import services.moleculer.repl.TextTable;
 import services.moleculer.serializer.Serializer;
 import services.moleculer.service.Name;
+import services.moleculer.service.ServiceInvoker;
+import services.moleculer.transporter.TcpTransporter;
 import services.moleculer.transporter.Transporter;
 
 /**
@@ -76,66 +86,96 @@ public class Info extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 
 		// Get Runtime
 		Runtime r = Runtime.getRuntime();
+		ServiceBrokerConfig cfg = broker.getConfig();
 
-		// General informations
+		// --- GENERAL INFORMATION ---
+
 		printHeader(out, "General information");
 		TextTable table = new TextTable(false, "Name", "Value");
-		table.addRow("CPU", System.getProperty("os.arch", "unknown") + ", cores: " + r.availableProcessors());
-		int cpuUsage = broker.getConfig().getMonitor().getTotalCpuPercent();
-		table.addRow("CPU usage", cpuUsage + "%");
+
+		table.addRow(GRAY + "CPU", ": " + WHITE + "Arch: " + System.getProperty("os.arch", "unknown") + ", Cores: "
+				+ r.availableProcessors());
+		int cpuUsage = cfg.getMonitor().getTotalCpuPercent();
+		table.addRow(GRAY + "CPU usage", ": " + WHITE + cpuUsage + "%");
 		long total = r.totalMemory();
 		long free = r.freeMemory();
 		long used = total - free;
 		int usedLen = (int) (20 * used / total);
-		StringBuilder tmp = new StringBuilder();
+		StringBuilder tmp = new StringBuilder(64);
+		tmp.append(": ");
+		tmp.append(WHITE);
 		tmp.append('[');
-		printChars(tmp, '#', usedLen);
+		tmp.append(GREEN);
+		if (usedLen < 1) {
+			usedLen = 1;
+		}
+		printChars(tmp, '|', usedLen);
+		tmp.append(WHITE);
 		printChars(tmp, '-', 20 - usedLen);
 		tmp.append("] ");
+		tmp.append(GRAY);
 		synchronized (formatter) {
 			tmp.append(formatter.format((double) (free / (double) 1024) / (double) 1024));
 		}
 		tmp.append(" MB free");
-		table.addRow("Heap", tmp.toString());
-		table.addRow("OS",
-				System.getProperty("os.name", "unknown") + " (V" + System.getProperty("os.version", "?") + ')');
+		table.addRow(GRAY + "Heap", tmp.toString());
+		table.addRow(GRAY + "OS", ": " + WHITE + System.getProperty("os.name", "unknown") + " (V"
+				+ System.getProperty("os.version", "?") + ')');
 		try {
-			table.addRow("IP", InetAddress.getLocalHost().getHostAddress());
+			table.addRow(GRAY + "IP", ": " + WHITE + InetAddress.getLocalHost().getHostAddress());
 		} catch (Exception ignored) {
 		}
-		table.addRow("Hostname", getHostName());
-		table.addRow("Software version", ServiceBroker.SOFTWARE_VERSION);
-		table.addRow("Protocol version", ServiceBroker.PROTOCOL_VERSION);
-		table.addRow("Java VM version", System.getProperty("java.version", "unknown") + " from "
+		table.addRow(GRAY + "Hostname", ": " + WHITE + getHostName());
+		table.addRow("", "");
+
+		table.addRow(GRAY + "Java VM version", ": " + WHITE + System.getProperty("java.version", "unknown") + " from "
 				+ System.getProperty("java.vm.vendor", "unknown vendor"));
-		table.addRow("Java VM type", System.getProperty("java.vm.name", "unknown"));
-		table.addRow("Date and time", SimpleDateFormat
-				.getDateTimeInstance(SimpleDateFormat.FULL, SimpleDateFormat.MEDIUM, Locale.US).format(new Date()));
+		table.addRow(GRAY + "Java VM type", ": " + WHITE + System.getProperty("java.vm.name", "unknown"));
+
+		table.addRow(GRAY + "Moleculer version", ": " + WHITE + ServiceBroker.SOFTWARE_VERSION);
+		table.addRow(GRAY + "Protocol version", ": " + WHITE + ServiceBroker.PROTOCOL_VERSION);
+
 		TimeZone zone = TimeZone.getDefault();
-		int rawOffset = zone.getRawOffset();
+		int currentOffset = zone.getOffset(System.currentTimeMillis());
 		String offset;
-		if (rawOffset == 0) {
+		if (currentOffset == 0) {
 			offset = "+00:00";
 		} else {
-			long hours = TimeUnit.MILLISECONDS.toHours(rawOffset);
-			long minutes = TimeUnit.MILLISECONDS.toMinutes(rawOffset);
+			long hours = TimeUnit.MILLISECONDS.toHours(currentOffset);
+			long minutes = TimeUnit.MILLISECONDS.toMinutes(currentOffset);
 			minutes = Math.abs(minutes - TimeUnit.HOURS.toMinutes(hours));
 			offset = String.format("%+03d:%02d", hours, Math.abs(minutes));
 		}
-		table.addRow("Time zone", zone.getDisplayName() + " (GMT" + offset + ')');
+		table.addRow("", "");
+
+		table.addRow(GRAY + "Current time",
+				": " + WHITE
+						+ SimpleDateFormat
+								.getDateTimeInstance(SimpleDateFormat.FULL, SimpleDateFormat.MEDIUM, Locale.US)
+								.format(new Date())
+						+ " GMT" + offset + " (" + zone.getDisplayName() + ")");
+
 		out.println(table);
 
-		// Broker properties
-		Transporter t = broker.getConfig().getTransporter();
-		printHeader(out, "Properties of broker");
-		table = new TextTable(false, "Name", "Value");
-		table.addRow("Node ID", broker.getNodeID());
+		// --- BROKER INFORMATION ---
 
-		Tree info = broker.getConfig().getServiceRegistry().getDescriptor();
+		Transporter t = cfg.getTransporter();
+		printHeader(out, "Broker information");
+		table = new TextTable(false, "Name", "Value");
+
+		String ns = cfg.getNamespace();
+		if (ns == null || ns.isEmpty()) {
+			table.addRow(GRAY + "Namespace", ": <None>");
+		} else {
+			table.addRow(GRAY + "Namespace", ": " + WHITE + ns);
+		}
+		table.addRow(GRAY + "Node ID", ": " + WHITE + broker.getNodeID());
+
+		Tree info = cfg.getServiceRegistry().getDescriptor();
 		Tree services = info.get("services");
 		if (services != null && !services.isNull()) {
 			int actionCounter = 0;
@@ -150,38 +190,52 @@ public class Info extends Command {
 					eventCounter += events.size();
 				}
 			}
-			table.addRow("Services", Integer.toString(services.size()));
-			table.addRow("Actions", Integer.toString(actionCounter));
-			table.addRow("Events", Integer.toString(eventCounter));
+			table.addRow(GRAY + "Services", ": " + WHITE + services.size());
+			table.addRow(GRAY + "Actions", ": " + WHITE + actionCounter);
+			table.addRow(GRAY + "Events", ": " + WHITE + eventCounter);
 		} else {
-			table.addRow("Services", "0");
-			table.addRow("Actions", "0");
-			table.addRow("Events", "0");
+			table.addRow(GRAY + "Services", ": " + WHITE + "0");
+			table.addRow(GRAY + "Actions", ": " + WHITE + "0");
+			table.addRow(GRAY + "Events", ": " + WHITE + "0");
 		}
 
 		table.addRow("", "");
-		addType(table, "Invocation strategy", broker.getConfig().getStrategyFactory());
-		addType(table, "Cacher", broker.getConfig().getCacher());
+		addType(table, "Strategy", cfg.getStrategyFactory());
+		addType(table, "Cacher", cfg.getCacher());
 		if (t == null) {
-			table.addRow("Nodes", "1");
+			table.addRow(GRAY + "Nodes", ": " + CYAN + "1");
 		} else {
-			table.addRow("Nodes", Integer.toString(t.getAllNodeIDs().size()));
+			table.addRow(GRAY + "Nodes", ": " + CYAN + t.getAllNodeIDs().size());
 		}
-		table.addRow("", "");
-		addType(table, "Context factory", broker.getConfig().getContextFactory());
-		addType(table, "Event bus", broker.getConfig().getEventbus());
-		addType(table, "System monitor", broker.getConfig().getMonitor());
-		addType(table, "Service registry", broker.getConfig().getServiceRegistry());
-		addType(table, "UID generator", broker.getConfig().getUidGenerator());
-		table.addRow("", "");
-
-		addType(table, "Task executor", broker.getConfig().getExecutor());
-		addType(table, "Task scheduler", broker.getConfig().getScheduler());
 		out.println(table);
 
-		// Transporter properties
-		printHeader(out, "Properties of transporter");
+		// --- BROKER OPTIONS ---
+
+		printHeader(out, "Broker options");
 		table = new TextTable(false, "Name", "Value");
+
+		addType(table, "Context factory", cfg.getContextFactory());
+		addType(table, "Event bus", cfg.getEventbus());
+		addType(table, "System monitor", cfg.getMonitor());
+		addType(table, "Service registry", cfg.getServiceRegistry());
+		addType(table, "UID generator", cfg.getUidGenerator());
+
+		ServiceInvoker si = cfg.getServiceInvoker();
+		if (si instanceof CircuitBreaker) {
+			table.addRow(GRAY + "Circuit breaker:", ": " + MAGENTA + "true");
+			CircuitBreaker cb = (CircuitBreaker) si;
+			table.addRow(GRAY + "Max failures", ": " + CYAN + cb.getMaxErrors());
+			table.addRow(GRAY + "Half open time", ": " + CYAN + cb.getWindowLength());
+		} else {
+			table.addRow(GRAY + "Circuit breaker:", ": " + MAGENTA + "false");
+		}
+
+		table.addRow("", "");
+
+		addType(table, "Task executor", cfg.getExecutor());
+		addType(table, "Task scheduler", cfg.getScheduler());
+		table.addRow("", "");
+
 		if (t != null) {
 			Serializer s = t.getSerializer();
 			addType(table, "Serializer", s);
@@ -192,18 +246,41 @@ public class Info extends Command {
 					String writers = getAPIs(TreeWriterRegistry.getWriter("json"),
 							TreeWriterRegistry.getWritersByFormat("json"));
 					if (readers.equals(writers)) {
-						table.addRow("JSON implementations", readers);
+						table.addRow(GRAY + "JSON implementations", ": " + WHITE + readers);
 					} else {
-						table.addRow("JSON readers", readers);
-						table.addRow("JSON writers", writers);
+						table.addRow(GRAY + "JSON readers", ": " + WHITE + readers);
+						table.addRow(GRAY + "JSON writers", ": " + WHITE + writers);
 					}
 				}
 			} catch (Exception ignored) {
-			}
+			}			
 			addType(table, "Transporter", t);
+			if (t instanceof TcpTransporter) {
+				TcpTransporter tt = (TcpTransporter) t;
+				table.addRow(GRAY + "Gossip period", ": " + CYAN + tt.getGossipPeriod());
+				table.addRow(GRAY + "Max connections", ": " + CYAN + tt.getMaxConnections());
+				table.addRow(GRAY + "TCP server port", ": " + CYAN + tt.getCurrentPort());
+				table.addRow(GRAY + "UDP broadcasting", ": " + MAGENTA + tt.isUdpBroadcast());
+				table.addRow(GRAY + "UDP multicasting",
+						": " + MAGENTA + (tt.getUrls() == null || tt.getUrls().length == 0));
+				
+				if (tt.getUdpBindAddress() == null) {
+					table.addRow(GRAY + "Broadcast address", ": <auto>");					
+				} else {
+					table.addRow(GRAY + "Broadcast address", ": " + GREEN + tt.getUdpBindAddress());
+				}
+				table.addRow(GRAY + "Multicast address", ": " + GREEN + tt.getUdpMulticast());
+				table.addRow(GRAY + "UDP port", ": " + CYAN + tt.getUdpPort());
+
+			} else {
+				table.addRow(GRAY + "Heartbeat interval", ": " + CYAN + t.getHeartbeatInterval());
+				table.addRow(GRAY + "Heartbeat timeout", ": " + CYAN + t.getHeartbeatTimeout());
+			}
+			table.addRow(GRAY + "Offline timeout", ": " + CYAN + t.getOfflineTimeout());
 		} else {
-			table.addRow("Transporter", "<none>");
+			table.addRow(GRAY + "Transporter", ": <none>");
 		}
+		table.addRow(GRAY + "Internal services", ": " + MAGENTA + cfg.isInternalServices());
 		out.println(table);
 	}
 
@@ -231,16 +308,17 @@ public class Info extends Command {
 
 	protected void addType(TextTable table, String title, Object component) {
 		if (component == null) {
-			table.addRow(title, "<none>");
+			table.addRow(GRAY + title, GRAY + ": <none>");
 		} else {
-			table.addRow(title, nameOf(component, false));
+			table.addRow(GRAY + title, ": " + GREEN + nameOf(component, false));
 		}
 	}
 
-	protected void printHeader(PrintStream out, String header) {
-		header = "  " + header;
+	protected void printHeader(PrintWriter out, String header) {
+		header = YELLOW + "  " + header;
 		int len = header.length() + 2;
 		StringBuilder line = new StringBuilder(len);
+		line.append(YELLOW);
 		for (int i = 0; i < len; i++) {
 			line.append('=');
 		}

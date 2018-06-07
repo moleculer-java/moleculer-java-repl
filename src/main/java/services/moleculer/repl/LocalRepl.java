@@ -28,27 +28,34 @@ package services.moleculer.repl;
 import static io.datatree.dom.PackageScanner.scan;
 import static services.moleculer.util.CommonUtils.nameOf;
 
-import java.io.PrintStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import services.moleculer.ServiceBroker;
 import services.moleculer.service.Name;
 
 /**
  * Local interactive console (uses System.in and System.out). To start console,
  * type<br>
+ * 
  * <pre>
  * ServiceBroker broker = ServiceBroker.builder().build();
  * broker.start();
  * broker.repl();
  * </pre>
+ * 
  * Start telnet-based console:
+ * 
  * <pre>
  * broker.repl(false);
  * </pre>
+ * 
  * @see RemoteRepl
  */
 @Name("Local REPL Console")
@@ -59,11 +66,21 @@ public class LocalRepl extends Repl implements Runnable {
 	/**
 	 * Java package(s) where the custom (user-defined) commands are located.
 	 */
-	private String[] packagesToScan = {};
+	protected String[] packagesToScan = {};
 
 	// --- MAP OF THE REGISTERED COMMANDS ---
 
 	protected ConcurrentHashMap<String, Command> commands = new ConcurrentHashMap<>(64);
+
+	// --- VARIABLES ---
+
+	protected ExecutorService executor;
+
+	protected String lastCommand = "help";
+
+	protected LocalReader reader;
+
+	protected ColorWriter colorWriter = new ColorWriter();
 
 	// --- CONSTRUCTORS ---
 
@@ -74,13 +91,44 @@ public class LocalRepl extends Repl implements Runnable {
 		this.packagesToScan = packagesToScan;
 	}
 
+	// --- START CONSOLE INSTANCE ---
+
+	/**
+	 * Initializes console instance.
+	 *
+	 * @param broker
+	 *            parent ServiceBroker
+	 */
+	@Override
+	public void started(ServiceBroker broker) throws Exception {
+		super.started(broker);
+		
+		// We ensure that the first command will run fast
+		if (isEnabled()) {
+			broker.getConfig().getExecutor().execute(() -> {
+				try {					
+					onCommand(new PrintWriter(new Writer() {
+						
+						@Override
+						public void write(char[] cbuf, int off, int len) throws IOException {
+						}
+						
+						@Override
+						public void flush() throws IOException {
+						}
+						
+						@Override
+						public void close() throws IOException {
+						}
+						
+					}), "info");
+				} catch (Exception ignored) {
+				}
+			});
+		}
+	}
+	
 	// --- START READING INPUT ---
-
-	protected ExecutorService executor;
-
-	protected String lastCommand = "help";
-
-	protected LocalReader reader;
 
 	@Override
 	protected void startReading() {
@@ -169,7 +217,7 @@ public class LocalRepl extends Repl implements Runnable {
 					} else if ("q".equalsIgnoreCase(command)) {
 						command = "exit";
 					}
-					onCommand(System.out, command);
+					onCommand(new PrintWriter(colorWriter), command);
 					lastCommand = command;
 				}
 			}
@@ -186,7 +234,7 @@ public class LocalRepl extends Repl implements Runnable {
 
 	// --- COMMAND PROCESSOR ---
 
-	protected void onCommand(PrintStream out, String command) throws Exception {
+	protected void onCommand(PrintWriter out, String command) throws Exception {
 		try {
 			if (command == null) {
 				return;
@@ -212,29 +260,16 @@ public class LocalRepl extends Repl implements Runnable {
 						return;
 					}
 				}
-				String[] names = new String[commands.size()];
-				commands.keySet().toArray(names);
-				Arrays.sort(names, String.CASE_INSENSITIVE_ORDER);
-				TextTable table = new TextTable(false, "Command", "Description");
-				table.setPadding(2);
-				for (String name : names) {
-					if (!telnet && name.equals("close")) {
-						continue;
-					}
-					Command impl = commands.get(name);
-					table.addRow(impl.getUsage(), impl.getDescription());
-				}
-				out.println("Commands:");
-				out.println();
-				out.println(table);
+				printHelp(out, telnet);
 				out.println("  Type \"repeat\" or \"r\"  to repeat the execution of the last command.");
 				out.println();
 				return;
 			}
 			Command impl = commands.get(cmd);
 			if (impl == null) {
-				out.println("The \"" + cmd + "\" command is unknown!");
-				out.println("Type \"help\" for more information.");
+				out.println("The \"" + cmd + "\" command is unknown.");
+				out.println();
+				printHelp(out, false);
 				out.println();
 				return;
 			}
@@ -257,7 +292,25 @@ public class LocalRepl extends Repl implements Runnable {
 		}
 	}
 
-	protected void printCommandHelp(PrintStream out, String name) {
+	protected void printHelp(PrintWriter out, boolean telnet) {
+		String[] names = new String[commands.size()];
+		commands.keySet().toArray(names);
+		Arrays.sort(names, String.CASE_INSENSITIVE_ORDER);
+		TextTable table = new TextTable(false, "Command", "Description");
+		table.setPadding(2);
+		for (String name : names) {
+			if (!telnet && name.equals("close")) {
+				continue;
+			}
+			Command impl = commands.get(name);
+			table.addRow(impl.getUsage(), impl.getDescription());
+		}
+		out.println("Commands:");
+		out.println();
+		out.println(table);
+	}
+	
+	protected void printCommandHelp(PrintWriter out, String name) {
 		Command impl = commands.get(name);
 		if (impl == null) {
 			out.println("The \"" + name + "\" command is unknown!");
@@ -270,9 +323,12 @@ public class LocalRepl extends Repl implements Runnable {
 		out.println();
 		out.println("  Options:");
 		out.println();
+		TextTable table = new TextTable(false, "Option", "Description");
+		table.setPadding(2);
 		for (String[] option : impl.options) {
-			out.println("    --" + option[0] + "  " + option[1]);
+			table.addRow("  --" + option[0], option[1]);
 		}
+		out.println(table);
 		out.println();
 	}
 

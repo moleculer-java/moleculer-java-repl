@@ -25,7 +25,10 @@
  */
 package services.moleculer.repl.commands;
 
-import java.io.PrintStream;
+import static services.moleculer.repl.ColorWriter.GREEN;
+import static services.moleculer.repl.ColorWriter.WHITE;
+
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 
 import services.moleculer.ServiceBroker;
@@ -60,7 +63,7 @@ public class Gc extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		Runtime runtime = Runtime.getRuntime();
 		long before = runtime.totalMemory() - runtime.freeMemory();
 		System.runFinalization();
@@ -85,15 +88,17 @@ public class Gc extends Command {
 		out.println("%");
 	}
 
-	protected void printMemory(PrintStream out, String title, long value, long max, int offset) throws Exception {
+	protected void printMemory(PrintWriter out, String title, long value, long max, int offset) throws Exception {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append(title);
+		tmp.append(WHITE);
 		synchronized (formatter) {
 			tmp.append(formatter.format((double) (value / (double) 1024) / (double) 1024));
 		}
 		tmp.append(" Mbytes");
 		printChars(tmp, ' ', offset - tmp.length());
-		printChars(tmp, '#', (int) ((77 - offset) * value / max));
+		tmp.append(GREEN);
+		printChars(tmp, '|', (int) ((77 - offset) * value / max));
 		out.println(tmp.toString());
 	}
 

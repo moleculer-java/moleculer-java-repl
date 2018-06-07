@@ -25,6 +25,12 @@
  */
 package services.moleculer.repl;
 
+import static services.moleculer.repl.ColorWriter.GRAY;
+import static services.moleculer.repl.ColorWriter.WHITE;
+
+import static services.moleculer.repl.ColorWriter.OK_COLOR;
+import static services.moleculer.repl.ColorWriter.FAIL_COLOR;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -65,7 +71,7 @@ public class TextTable {
 		addRow(false, Arrays.asList(cells));
 	}
 
-	public void addRow(boolean checkLength,String... cells) {
+	public void addRow(boolean checkLength, String... cells) {
 		addRow(checkLength, Arrays.asList(cells));
 	}
 
@@ -109,7 +115,7 @@ public class TextTable {
 			createRowLine(stringBuilder, headersList.size(), columnMaxWidthMapping);
 			stringBuilder.append(newLine);
 			for (int headerIndex = 0; headerIndex < headersList.size(); headerIndex++) {
-				fillCell(stringBuilder, headersList.get(headerIndex), headerIndex, columnMaxWidthMapping, true);
+				fillCell(stringBuilder, headersList.get(headerIndex), headerIndex, columnMaxWidthMapping, true, WHITE);
 			}
 			stringBuilder.append(newLine);
 			createRowLine(stringBuilder, headersList.size(), columnMaxWidthMapping);
@@ -117,7 +123,10 @@ public class TextTable {
 		}
 		for (List<String> row : rowsList) {
 			for (int cellIndex = 0; cellIndex < row.size(); cellIndex++) {
-				fillCell(stringBuilder, row.get(cellIndex), cellIndex, columnMaxWidthMapping, false);
+				String cell = row.get(cellIndex);
+				boolean centered = "OK".equals(cell) || "FAILED".equals(cell) || "Yes".equals(cell) || "No".equals(cell)
+						|| "ONLINE".equals(cell) || "OFFLINE".equals(cell);
+				fillCell(stringBuilder, cell, cellIndex, columnMaxWidthMapping, centered, null);
 			}
 			stringBuilder.append(newLine);
 		}
@@ -135,6 +144,7 @@ public class TextTable {
 
 	protected void createRowLine(StringBuilder stringBuilder, int headersListSize,
 			Map<Integer, Integer> columnMaxWidthMapping) {
+		stringBuilder.append(GRAY);
 		for (int i = 0; i < headersListSize; i++) {
 			if (i == 0) {
 				stringBuilder.append(jointSymbol);
@@ -183,13 +193,22 @@ public class TextTable {
 	}
 
 	protected void fillCell(StringBuilder stringBuilder, String cell, int cellIndex,
-			Map<Integer, Integer> columnMaxWidthMapping, boolean centered) {
+			Map<Integer, Integer> columnMaxWidthMapping, boolean centered, String color) {
 		int cellPaddingSize = getOptimumCellPadding(cellIndex, cell.length(), columnMaxWidthMapping, padding);
 		if (cellIndex == 0 && drawGridAndHeader) {
+			stringBuilder.append(GRAY);
 			stringBuilder.append(vSplitSymbol);
+		}
+		if ("OK".equals(cell) || "ONLINE".equals(cell)) {
+			stringBuilder.append(OK_COLOR);
+		} else if ("FAILED".equals(cell) || "OFFLINE".equals(cell)) {
+			stringBuilder.append(FAIL_COLOR);
 		}
 		if (centered) {
 			fillSpace(stringBuilder, cellPaddingSize);
+			if (color != null) {
+				stringBuilder.append(color);
+			}
 			stringBuilder.append(cell);
 			if (cell.length() % 2 != 0) {
 				stringBuilder.append(' ');
@@ -204,6 +223,7 @@ public class TextTable {
 			fillSpace(stringBuilder, (2 * cellPaddingSize) - padding);
 		}
 		if (drawGridAndHeader) {
+			stringBuilder.append(GRAY);
 			stringBuilder.append(vSplitSymbol);
 		}
 	}

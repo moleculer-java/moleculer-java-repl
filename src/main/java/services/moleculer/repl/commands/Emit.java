@@ -25,7 +25,9 @@
  */
 package services.moleculer.repl.commands;
 
-import java.io.PrintStream;
+import static services.moleculer.repl.ColorWriter.YELLOW;
+
+import java.io.PrintWriter;
 
 import io.datatree.Tree;
 import services.moleculer.ServiceBroker;
@@ -62,10 +64,10 @@ public class Emit extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		String name = parameters[0];
 		Tree payload = getPayload(parameters);
-		out.println(">> Emit '" + name + "' with payload: " + payload.toString(false));
+		out.println(YELLOW + ">> Emit '" + name + "' with payload: " + payload.toString("colorized-json", false));
 		broker.emit(name, payload);
 	}
 

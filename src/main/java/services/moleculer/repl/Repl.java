@@ -27,6 +27,7 @@ package services.moleculer.repl;
 
 import static services.moleculer.util.CommonUtils.nameOf;
 
+import io.datatree.dom.TreeWriterRegistry;
 import services.moleculer.ServiceBroker;
 import services.moleculer.service.Name;
 import services.moleculer.service.Service;
@@ -40,6 +41,12 @@ import services.moleculer.service.Service;
 @Name("REPL Console")
 public abstract class Repl extends Service {
 
+	// --- INSTALL COLORIZED JSON WRITER ---
+	
+	static {
+		TreeWriterRegistry.setWriter("colorized-json", new JsonColorizer());
+	}
+	
 	// --- START CONSOLE INSTANCE ---
 
 	/**
@@ -57,8 +64,6 @@ public abstract class Repl extends Service {
 	 *
 	 * @param broker
 	 *            parent ServiceBroker
-	 * @param config
-	 *            optional configuration of the current component
 	 */
 	@Override
 	public void started(ServiceBroker broker) throws Exception {

@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'com.bmuschko.nexus'
+apply plugin: 'jacoco'
 
 buildscript {
     repositories {
@@ -13,15 +14,126 @@ buildscript {
     }
 }
 
+// --- JAVADOC ---
+
+javadoc {
+	failOnError = false
+}
+
+// --- JACOCO ---
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+// --- CONFIGURATIONS ---
+
+configurations {
+    runtime
+    ecj
+}
+
+configurations.all {
+    // resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+// --- REPOSITORIES ---
+
 repositories {
     mavenCentral()
     jcenter()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
+// --- DEPENDENCIES ---
+
 dependencies {
-    compile 'org.slf4j:slf4j-api:1.7.21'
+
     testCompile 'junit:junit:4.12'
+	ecj 'org.eclipse.jdt.core.compiler:ecj:4.4.2'
     
-    compile project(':moleculer-java')
+    // --- MOLECULER CORE ---
+    	    
+	// https://mvnrepository.com/artifact/com.github.berkesa/moleculer-java
+	compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.0.1'
 	
+	// --- COLORED TERMINAL CONSOLE ---
+	
+	// https://mvnrepository.com/artifact/com.diogonunes/JCDP
+	compile group: 'com.diogonunes', name: 'JCDP', version: '2.0.3.1'
+	
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+group = 'com.github.berkesa'
+
+version = '1.0.1-SNAPSHOT'
+
+modifyPom {
+    project {
+        artifactId 'moleculer-java-repl'
+        name 'Moleculer Microservices Framework'
+        description 'Fast & powerful microservices framework for Java.'
+        url 'https://moleculer-java.github.io/moleculer-java-repl/'
+        inceptionYear '2018'
+
+        scm {
+            url 'https://moleculer-java.github.io/moleculer-java-repl/'
+            connection 'scm:https://github.com/moleculer-java/moleculer-java-repl.git'
+            developerConnection 'scm:git://github.com/moleculer-java/moleculer-java-repl.git'
+        }
+
+        licenses {
+            license {
+                name "The MIT License"
+                url "http://www.opensource.org/licenses/MIT"
+                distribution 'repo'
+            }
+        }
+        
+        dependencies {
+            dependency {
+                groupId 'com.github.berkesa'
+                artifactId 'moleculer-java'
+                version '1.0.1'
+                scope 'runtime'
+            }
+        }
+
+        developers {
+            developer {
+                id 'berkesa'
+                name 'Andras Berkes'
+                email 'andras.berkes@programmer.net'
+            }
+        }
+    }
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+	snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
+}
+
+// --- COMPILATION ---
+
+compileJava {
+	options.fork = true
+	options.forkOptions.with {
+		executable = 'java'
+		jvmArgs = ['-classpath', project.configurations.ecj.asPath, 'org.eclipse.jdt.internal.compiler.batch.Main', '-nowarn']
+	}
+}
+
+// --- JAR ---
+
+jar {
+    baseName = 'moleculer-repl'
+    version =  '1.0.1'
 }

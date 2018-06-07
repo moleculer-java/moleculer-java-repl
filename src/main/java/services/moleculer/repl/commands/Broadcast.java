@@ -25,12 +25,14 @@
  */
 package services.moleculer.repl.commands;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import io.datatree.Tree;
 import services.moleculer.ServiceBroker;
 import services.moleculer.repl.Command;
 import services.moleculer.service.Name;
+
+import static services.moleculer.repl.ColorWriter.YELLOW;
 
 /**
  * Broadcast an event. Sample of usage:<br>
@@ -62,10 +64,10 @@ public class Broadcast extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		String name = parameters[0];
 		Tree payload = getPayload(parameters);
-		out.println(">> Broadcast '" + name + "' with payload: " + payload.toString(false));
+		out.println(YELLOW + ">> Broadcast '" + name + "' with payload: " + payload.toString("colorized-json", false));
 		broker.broadcast(name, payload);
 	}
 

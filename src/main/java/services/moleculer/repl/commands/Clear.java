@@ -25,7 +25,9 @@
  */
 package services.moleculer.repl.commands;
 
-import java.io.PrintStream;
+import static services.moleculer.repl.ColorWriter.YELLOW;
+
+import java.io.PrintWriter;
 
 import services.moleculer.ServiceBroker;
 import services.moleculer.cacher.Cacher;
@@ -57,14 +59,14 @@ public class Clear extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintStream out, String[] parameters) throws Exception {
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		Cacher cacher = broker.getConfig().getCacher();
 		if (cacher == null) {
 			out.println("Unable to clear cache - broker has no cacher module.");
 		} else {
 			String match = parameters[0];
 			cacher.clean(match).then(in -> {
-				out.println("Cache cleared successfully.");
+				out.println(YELLOW + ">> Cache cleared successfully.");
 			}).catchError(cause -> {
 				out.println("Unable to remove entries from cache (" + cause + ")!");
 			});
