@@ -25,11 +25,10 @@
  */
 package services.moleculer.repl;
 
-import static services.moleculer.repl.ColorWriter.GRAY;
-import static services.moleculer.repl.ColorWriter.WHITE;
-
-import static services.moleculer.repl.ColorWriter.OK_COLOR;
 import static services.moleculer.repl.ColorWriter.FAIL_COLOR;
+import static services.moleculer.repl.ColorWriter.GRAY;
+import static services.moleculer.repl.ColorWriter.OK_COLOR;
+import static services.moleculer.repl.ColorWriter.WHITE;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,6 +36,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Text-table formatter.
+ */
 public class TextTable {
 
 	// --- VARIABLES ---

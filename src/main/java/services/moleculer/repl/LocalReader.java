@@ -25,6 +25,9 @@
  */
 package services.moleculer.repl;
 
+/**
+ * System.in reader daemon.
+ */
 public class LocalReader extends Thread {
 
 	// --- LINE ---

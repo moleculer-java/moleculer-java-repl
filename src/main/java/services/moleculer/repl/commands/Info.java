@@ -155,7 +155,7 @@ public class Info extends Command {
 		table.addRow(GRAY + "Current time",
 				": " + WHITE
 						+ SimpleDateFormat
-								.getDateTimeInstance(SimpleDateFormat.FULL, SimpleDateFormat.MEDIUM, Locale.US)
+								.getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.MEDIUM, Locale.US)
 								.format(new Date())
 						+ " GMT" + offset + " (" + zone.getDisplayName() + ")");
 

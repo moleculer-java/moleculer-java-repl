@@ -25,10 +25,10 @@
  */
 package services.moleculer.repl.commands;
 
+import static services.moleculer.repl.ColorWriter.CYAN;
+import static services.moleculer.repl.ColorWriter.GREEN;
 import static services.moleculer.repl.ColorWriter.YELLOW;
 import static services.moleculer.util.CommonUtils.formatNamoSec;
-import static services.moleculer.repl.ColorWriter.GREEN;
-import static services.moleculer.repl.ColorWriter.CYAN;
 
 import java.io.PrintWriter;
 

@@ -25,6 +25,13 @@
  */
 package services.moleculer.repl;
 
+import static services.moleculer.repl.ColorWriter.CYAN;
+import static services.moleculer.repl.ColorWriter.GRAY;
+import static services.moleculer.repl.ColorWriter.GREEN;
+import static services.moleculer.repl.ColorWriter.MAGENTA;
+import static services.moleculer.repl.ColorWriter.WHITE;
+import static services.moleculer.repl.ColorWriter.YELLOW;
+
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
@@ -33,13 +40,9 @@ import io.datatree.dom.Config;
 import io.datatree.dom.builtin.JsonBuiltin;
 import io.datatree.dom.converters.DataConverterRegistry;
 
-import static services.moleculer.repl.ColorWriter.YELLOW;
-import static services.moleculer.repl.ColorWriter.GRAY;
-import static services.moleculer.repl.ColorWriter.GREEN;
-import static services.moleculer.repl.ColorWriter.WHITE;
-import static services.moleculer.repl.ColorWriter.CYAN;
-import static services.moleculer.repl.ColorWriter.MAGENTA;
-
+/**
+ * JSON serializer with color code parser. Generates "colorized" JSON string.
+ */
 public class JsonColorizer extends JsonBuiltin {
 
 	// --- IMPLEMENTED WRITER METHOD ---
@@ -66,7 +69,7 @@ public class JsonColorizer extends JsonBuiltin {
 	}
 
 	// --- PROTECTED UTILITIES ---
-	
+
 	@SuppressWarnings("rawtypes")
 	protected static final void toColorizedString(StringBuilder builder, Object value, Object meta, int indent) {
 
@@ -81,7 +84,7 @@ public class JsonColorizer extends JsonBuiltin {
 			builder.append(YELLOW).append(value).append(GRAY);
 			return;
 		}
-		
+
 		// Boolean values
 		if (value instanceof Boolean) {
 			builder.append(MAGENTA).append(value).append(GRAY);
@@ -95,7 +98,7 @@ public class JsonColorizer extends JsonBuiltin {
 			builder.append(GRAY);
 			return;
 		}
-		
+
 		// Map
 		if (value instanceof Map) {
 			Map map = (Map) value;
@@ -194,5 +197,5 @@ public class JsonColorizer extends JsonBuiltin {
 		// Other types
 		appendString(builder, value, true);
 	}
-	
+
 }

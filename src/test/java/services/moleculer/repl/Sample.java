@@ -33,6 +33,7 @@ import services.moleculer.eventbus.Subscribe;
 import services.moleculer.service.Action;
 import services.moleculer.service.Name;
 import services.moleculer.service.Service;
+import services.moleculer.transporter.TcpTransporter;
 
 public class Sample {
 
@@ -41,9 +42,9 @@ public class Sample {
 		try {
 			ServiceBrokerConfig cfg = new ServiceBrokerConfig();
 
-			// RedisTransporter t = new RedisTransporter();
-			// t.setDebug(false);
-			// cfg.setTransporter(t);
+			TcpTransporter t = new TcpTransporter();
+			t.setDebug(false);
+			cfg.setTransporter(t);
 
 			ServiceBroker broker = new ServiceBroker(cfg);
 
@@ -73,7 +74,7 @@ public class Sample {
 			});
 
 			broker.start();
-			broker.repl(false);
+			broker.repl();
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -25,14 +25,14 @@
  */
 package services.moleculer.repl.commands;
 
+import static services.moleculer.repl.ColorWriter.YELLOW;
+
 import java.io.PrintWriter;
 
 import io.datatree.Tree;
 import services.moleculer.ServiceBroker;
 import services.moleculer.repl.Command;
 import services.moleculer.service.Name;
-
-import static services.moleculer.repl.ColorWriter.YELLOW;
 
 /**
  * Broadcast an event. Sample of usage:<br>

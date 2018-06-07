@@ -25,17 +25,15 @@
  */
 package services.moleculer.repl.commands;
 
+import static services.moleculer.repl.ColorWriter.GRAY;
+import static services.moleculer.repl.ColorWriter.GREEN;
+import static services.moleculer.repl.ColorWriter.YELLOW;
+
 import java.io.PrintWriter;
 
 import services.moleculer.ServiceBroker;
 import services.moleculer.repl.Command;
 import services.moleculer.service.Name;
-
-import static services.moleculer.repl.ColorWriter.YELLOW;
-import static services.moleculer.repl.ColorWriter.GRAY;
-import static services.moleculer.repl.ColorWriter.GREEN;
-import static services.moleculer.repl.ColorWriter.WHITE;
-import static services.moleculer.repl.ColorWriter.CYAN;
 
 /**
  * Lists hierarchy of threads.

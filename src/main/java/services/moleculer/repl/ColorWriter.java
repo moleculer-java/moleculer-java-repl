@@ -36,6 +36,9 @@ import com.diogonunes.jcdp.color.api.Ansi.Attribute;
 import com.diogonunes.jcdp.color.api.Ansi.BColor;
 import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
+/**
+ * Writer with built-in color code parser.
+ */
 public class ColorWriter extends Writer {
 
 	// --- CONSTANTS ---

@@ -129,12 +129,9 @@ public class Bench extends Command {
 				Thread.sleep(1);
 			}
 		}
-
-		if (num == 0 && time > 0 && time < 10) {
-			Thread.sleep(500L + (1000L * time));
-		} else {
-			out.println("The measurement is running in the background.");
-		}
+		
+		// Waiting for printing report
+		Thread.sleep(100);
 	}
 
 	protected void doRequest(ServiceBroker broker, BenchData data) {
