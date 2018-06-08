@@ -26,6 +26,7 @@
 package services.moleculer.repl;
 
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.LinkedList;
 
 import io.datatree.Tree;
@@ -63,25 +64,34 @@ public abstract class Command {
 	// --- FLAG PARSER ---
 
 	protected Tree parseFlags(String[] parameters) throws Exception {
-		return parseFlags(1, parameters);
+		return parseFlags(1, parameters, null);
 	}
 
-	protected Tree parseFlags(int from, String[] parameters) {
+	protected Tree parseFlags(int from, String[] parameters, Collection<String> knownParams) {
 		Tree flags = new Tree();
 		String name = null;
 		if (from < parameters.length) {
 			String param;
+			boolean skipNext = false;
 			for (int i = from; i < parameters.length; i++) {
 				param = parameters[i];
 				if (name == null) {
 					if (param.startsWith("--") && param.length() > 2) {
 						name = param.substring(2);
-						flags.put("lastIndex", i);
+						if (knownParams == null || knownParams.contains(name)) {
+							flags.put("lastIndex", i);
+							skipNext = false;
+						} else {
+							skipNext = true;
+						}
 					}
 				} else {
 					flags.put(name, param);
-					flags.put("lastIndex", i);
+					if (!skipNext) {
+						flags.put("lastIndex", i);
+					}
 					name = null;
+					skipNext = false;
 				}
 			}
 		}

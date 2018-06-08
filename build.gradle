@@ -1,7 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'com.bmuschko.nexus'
-apply plugin: 'jacoco'
 
 buildscript {
     repositories {
@@ -18,15 +17,6 @@ buildscript {
 
 javadoc {
 	failOnError = false
-}
-
-// --- JACOCO ---
-
-jacocoTestReport {
-    reports {
-        xml.enabled true
-        html.enabled true
-    }
 }
 
 // --- CONFIGURATIONS ---
@@ -58,9 +48,10 @@ dependencies {
     // --- MOLECULER CORE ---
     	    
 	// https://mvnrepository.com/artifact/com.github.berkesa/moleculer-java
-	compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.0.1'
+	// compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.0.1'
+	compile project(':moleculer-java')
 	
-	// --- COLORED TERMINAL CONSOLE ---
+	// --- ANSI TERMINAL ---
 	
 	// https://mvnrepository.com/artifact/com.diogonunes/JCDP
 	compile group: 'com.diogonunes', name: 'JCDP', version: '2.0.3.1'

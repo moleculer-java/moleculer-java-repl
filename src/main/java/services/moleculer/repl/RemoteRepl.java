@@ -88,7 +88,7 @@ public class RemoteRepl extends LocalRepl {
 	protected int socketTimeout;
 
 	/**
-	 * Maximum number of opened telnet maxSessions.
+	 * Maximum number of opened telnet sessions.
 	 */
 	protected int maxSessions = 8;
 

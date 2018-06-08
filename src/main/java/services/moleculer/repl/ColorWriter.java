@@ -86,10 +86,13 @@ public class ColorWriter extends Writer {
 			Attribute attr = Attribute.NONE;
 			while (st.hasMoreTokens()) {
 				String token = st.nextToken();
-				if (token.length() > 1 && wasDelimiter) {
+				if (token.length() > 0 && wasDelimiter) {
 					wasDelimiter = false;
 					char type = token.charAt(0);
 					token = token.substring(1);
+					if (token.isEmpty()) {
+						continue;
+					}
 					switch (type) {
 
 					case '+':

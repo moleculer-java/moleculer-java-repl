@@ -28,6 +28,7 @@ package services.moleculer.repl.commands;
 import static services.moleculer.repl.ColorWriter.CYAN;
 import static services.moleculer.repl.ColorWriter.GREEN;
 import static services.moleculer.repl.ColorWriter.YELLOW;
+import static services.moleculer.repl.ColorWriter.GRAY;
 import static services.moleculer.util.CommonUtils.formatNamoSec;
 
 import java.io.PrintWriter;
@@ -72,7 +73,7 @@ public class Call extends Command {
 		out.println(GREEN + "Response:");
 		out.println();
 		if (rsp == null) {
-			out.println("'null' response");
+			out.println(GRAY + "'null' response");
 		} else {
 			out.println(rsp.toString("colorized-json", true, true));
 		}

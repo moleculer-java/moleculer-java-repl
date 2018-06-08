@@ -35,6 +35,8 @@ import static services.moleculer.util.CommonUtils.formatNumber;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -85,7 +87,8 @@ public class Bench extends Command {
 
 		// Parse parameters
 		String action = parameters[0];
-		Tree flags = parseFlags(1, parameters);
+		Collection<String> knownParams = Arrays.asList(new String[]{"num", "time", "nodeID", "max"});
+		Tree flags = parseFlags(1, parameters, knownParams);
 		long num = flags.get("num", 0);
 		long time = flags.get("time", 0);
 		String nodeID = flags.get("nodeID", "");
@@ -148,12 +151,14 @@ public class Bench extends Command {
 		if (data.finished.get()) {
 			return;
 		}
+
+		long duration = System.nanoTime() - startTime;
+		data.sumTime.addAndGet(duration);
+	
 		long count = data.resCount.incrementAndGet();
 		if (cause != null) {
 			data.errorCount.incrementAndGet();
 		}
-		long duration = System.nanoTime() - startTime;
-		data.sumTime.addAndGet(duration);
 
 		long currentMin = data.minTime.get();
 		while (true) {
