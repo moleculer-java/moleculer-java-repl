@@ -1,6 +1,6 @@
-# [WIP] REPL for Moleculer
+# REPL for Moleculer
 
-Java REPL (Interactive Developer Console) for [Moleculer](https://github.com/berkesa/moleculer-java).
+Java REPL (Interactive Developer Console) for [Moleculer](https://moleculer-java.github.io/moleculer-java/).
 
 ## Download
 
