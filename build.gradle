@@ -48,8 +48,8 @@ dependencies {
     // --- MOLECULER CORE ---
     	    
 	// https://mvnrepository.com/artifact/com.github.berkesa/moleculer-java
-	// compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.0.1'
-	compile project(':moleculer-java')
+	compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.0.2-SNAPHSOT'
+	// compile project(':moleculer-java')
 	
 	// --- ANSI TERMINAL ---
 	
@@ -116,6 +116,7 @@ nexus {
 
 compileJava {
 	options.fork = true
+	options.encoding = 'UTF-8'
 	options.forkOptions.with {
 		executable = 'java'
 		jvmArgs = ['-classpath', project.configurations.ecj.asPath, 'org.eclipse.jdt.internal.compiler.batch.Main', '-nowarn']
