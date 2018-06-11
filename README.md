@@ -44,7 +44,7 @@ broker.repl();
 
 	<!-- PACKAGE OF YOUR MOLECULER SERVICES -->
 
-	<context:component-scan base-package="mpackage.of.my.services" />
+	<context:component-scan base-package="package.of.my.services" />
 
 	<!-- INSTALL DEVELOPER CONSOLE -->
 
