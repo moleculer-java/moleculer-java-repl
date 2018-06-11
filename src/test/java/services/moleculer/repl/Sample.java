@@ -38,16 +38,19 @@ import services.moleculer.transporter.TcpTransporter;
 public class Sample {
 
 	public static void main(String[] args) throws Exception {
-		System.out.println("START");
 		try {
+			
+			// Create Service Broker config
 			ServiceBrokerConfig cfg = new ServiceBrokerConfig();
 
 			TcpTransporter t = new TcpTransporter();
 			t.setDebug(false);
 			cfg.setTransporter(t);
 
+			// Create Service Broker (by config)
 			ServiceBroker broker = new ServiceBroker(cfg);
 
+			// Install sample service
 			broker.createService(new Service("math") {
 
 				@Name("add")
@@ -73,13 +76,15 @@ public class Sample {
 
 			});
 
+			// Start Service Broker
 			broker.start();
+			
+			// Start local REPL console
 			broker.repl();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("STOP");
 	}
 
 }

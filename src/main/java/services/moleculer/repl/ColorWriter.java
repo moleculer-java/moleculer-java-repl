@@ -50,8 +50,8 @@ public class ColorWriter extends Writer {
 	public static final String CYAN = "§$";
 	public static final String MAGENTA = "§~";
 	
-	public static final String OK_COLOR = "§ˇ";
-	public static final String FAIL_COLOR = "§^";
+	public static final String OK_COLOR = "§=";
+	public static final String FAIL_COLOR = "§÷";
 
 	protected final ColoredPrinter coloredPrinter;
 	protected final PrintStream printStream;
@@ -126,11 +126,11 @@ public class ColorWriter extends Writer {
 						attr = Attribute.LIGHT;
 						break;
 
-					case 'ˇ':
+					case '=':
 						bg = BColor.GREEN;
 						break;
 
-					case '^':
+					case '÷':
 						bg = BColor.RED;
 						break;
 
@@ -189,11 +189,11 @@ public class ColorWriter extends Writer {
 						prefix = "\u001B[35m\u001B[1m";
 						break;
 						
-					case 'ˇ':
+					case '=':
 						prefix = "\u001B[42m";
 						break;
 
-					case '^':
+					case '÷':
 						prefix = "\u001B[41m";
 						break;
 
