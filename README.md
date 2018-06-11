@@ -38,7 +38,7 @@ broker.repl();
 
 ## Screenshot
 
-![Java-based REPL Console](https://github.com/moleculer-java/moleculer-java-repl/blob/master/docs/console-java.png)
+![Java-based REPL Console](docs/console-java.png)
 
 # License
 moleculer-java-repl is available under the [MIT license](https://tldrlegal.com/license/mit-license).
