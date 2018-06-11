@@ -16,6 +16,7 @@ buildscript {
 // --- JAVADOC ---
 
 javadoc {
+	options.encoding = 'UTF-8'
 	failOnError = false
 }
 
@@ -48,7 +49,7 @@ dependencies {
     // --- MOLECULER CORE ---
     	    
 	// https://mvnrepository.com/artifact/com.github.berkesa/moleculer-java
-	compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.0.2-SNAPHSOT'
+	compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.0.2'
 	// compile project(':moleculer-java')
 	
 	// --- ANSI TERMINAL ---
@@ -63,7 +64,7 @@ targetCompatibility = 1.8
 
 group = 'com.github.berkesa'
 
-version = '1.0.2-SNAPSHOT'
+version = '1.0.2'
 
 modifyPom {
     project {
@@ -91,9 +92,15 @@ modifyPom {
             dependency {
                 groupId 'com.github.berkesa'
                 artifactId 'moleculer-java'
-                version '1.0.2-SNAPSHOT'
+                version '1.0.2'
                 scope 'runtime'
             }
+            dependency {
+                groupId 'com.diogonunes'
+                artifactId 'JCDP'
+                version '2.0.3.1'
+                scope 'runtime'
+            }            
         }
 
         developers {
