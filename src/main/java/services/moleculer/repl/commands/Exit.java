@@ -32,8 +32,9 @@ import services.moleculer.repl.Command;
 import services.moleculer.service.Name;
 
 /**
-* "Exit application" command. Shuts down ServiceBroker then the virtual machine.
-*/
+ * "Exit application" command. Shuts down ServiceBroker then the virtual
+ * machine.
+ */
 @Name("exit")
 public class Exit extends Command {
 
@@ -53,9 +54,24 @@ public class Exit extends Command {
 	}
 
 	@Override
-	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
-		broker.stop();
-		System.exit(0);
+	public synchronized void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
+		if (broker != null) {
+			ServiceBroker instance = broker;
+			broker = null;
+			try {
+				Thread safetyShutdown = new Thread(() -> {
+					try {
+						Thread.sleep(5000);
+						Runtime.getRuntime().halt(1);
+					} catch (Throwable ignored) {
+					}
+				}, "safetyShutdown");
+				safetyShutdown.setDaemon(true);
+				safetyShutdown.start();
+			} catch (Throwable ignored) {
+			}
+			instance.stop();
+		}
 	}
 
 }
