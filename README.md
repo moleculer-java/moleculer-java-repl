@@ -5,4 +5,4 @@ Java REPL (Interactive Developer Console) for [Moleculer](https://github.com/ber
 ![Java-based REPL Console](https://github.com/moleculer-java/moleculer-java-repl/blob/master/docs/console-java.png)
 
 # License
-moleculer-java-web is available under the [MIT license](https://tldrlegal.com/license/mit-license).
+moleculer-java-repl is available under the [MIT license](https://tldrlegal.com/license/mit-license).
