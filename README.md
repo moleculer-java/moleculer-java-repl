@@ -28,7 +28,7 @@ dependencies {
 ## Usage from code
 
 ```java
-// Create and Service Broker
+// Create Service Broker
 ServiceBroker broker = new ServiceBroker();
 broker.start();
 
