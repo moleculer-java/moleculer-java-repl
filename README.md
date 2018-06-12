@@ -77,13 +77,13 @@ broker.repl();
 
 ## Screenshot
 
-![Java-based REPL Console](https://github.com/moleculer-java/moleculer-java-repl/raw/master/docs/console-java.png)
+![image](docs/console-java.png)
 
 
 ## REPL Commands
 
 ```bash
-mol$ help
+mol $ help
 
 Commands:
 
@@ -110,7 +110,7 @@ Commands:
 
 ### List nodes
 ```bash
-mol$ nodes
+mol $ nodes
 ```
 
 **Options**
@@ -121,6 +121,12 @@ mol$ nodes
     --raw                     print service registry as JSON
     --save [filename], -a     save service registry to JSON file
 ```
+
+**Output**
+![image](docs/nodes.png)
+
+**Detailed output**
+![image](docs/nodes-detailed.png)
 
 # License
 moleculer-java-repl is available under the [MIT license](https://tldrlegal.com/license/mit-license).
