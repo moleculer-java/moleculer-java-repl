@@ -109,11 +109,13 @@ Commands:
 ```
 
 ### List nodes
+
 ```bash
 mol $ nodes
 ```
 
 **Options**
+
 ```
     --help                    output usage information
     --details, -d             detailed list
@@ -123,9 +125,11 @@ mol $ nodes
 ```
 
 **Output**
+
 ![image](docs/nodes.png)
 
 **Detailed output**
+
 ![image](docs/nodes-detailed.png)
 
 # License
