@@ -215,7 +215,7 @@ mol $ info
 mol $ env
 ```
 
-### List system properties of Java
+### List system properties of JavaVM
 
 ```bash
 mol $ props

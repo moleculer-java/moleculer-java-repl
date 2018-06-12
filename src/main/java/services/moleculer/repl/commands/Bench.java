@@ -157,7 +157,9 @@ public class Bench extends Command {
 	
 		long count = data.resCount.incrementAndGet();
 		if (cause != null) {
-			data.errorCount.incrementAndGet();
+			if (data.errorCount.incrementAndGet() == 1) {
+				data.cause = cause;
+			}
 		}
 
 		long currentMin = data.minTime.get();
@@ -246,6 +248,12 @@ public class Bench extends Command {
 			if (data.maxTime.get() != Long.MIN_VALUE) {
 				out.println("    Maximum: " + WHITE + formatNamoSec(data.maxTime.get()));
 			}
+			if (data.cause != null) {
+				out.println();
+				out.println(YELLOW + "Trace of the first faulty response:");
+				out.println();
+				data.cause.printStackTrace(out);
+			}
 		} catch (Exception e) {
 			e.printStackTrace(out);
 		}
@@ -273,6 +281,8 @@ public class Bench extends Command {
 		protected final AtomicBoolean timeout = new AtomicBoolean();
 		protected final AtomicBoolean finished = new AtomicBoolean();
 
+		protected Throwable cause;
+		
 		protected BenchData(ServiceBroker broker, CallOptions.Options opts, PrintWriter out, String action, Tree params,
 				long num) {
 			this.broker = broker;
