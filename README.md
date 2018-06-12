@@ -82,9 +82,7 @@ broker.repl();
 
 ## REPL Commands
 
-```bash
-mol $ help
-
+```
 Commands:
 
   actions [options]                           List of actions
@@ -132,5 +130,75 @@ mol $ nodes
 
 ![image](docs/nodes-detailed.png)
 
+### List services
+
+```bash
+mol $ services
+```
+
+**Options**
+
+```
+    --local, -l           only local services
+    --skipinternal, -i    skip internal services
+    --details, -d         print endpoints
+    --all, -a             list all (offline) services
+```
+
+**Output**
+
+![image](docs/services.png)
+
+**Detailed output**
+
+![image](docs/services-detailed.png)
+
+
+### List actions
+
+```bash
+mol $ actions
+```
+
+**Options**
+```
+    --local, -l           only local actions
+    --skipinternal, -i    skip internal actions
+    --details, -d         print endpoints
+    --all, -a             list all (offline) actions
+```
+
+**Output**
+
+![image](docs/actions.png)
+
+**Detailed output**
+
+![image](docs/actions-detailed.png)
+
+### List events
+
+```bash
+mol $ events
+```
+
+**Options**
+
+```
+    --local, -l           only local event listeners
+    --skipinternal, -i    skip internal event listeners
+    --details, -d         print endpoints
+    --all, -a             list all (offline) event listeners
+```
+
+**Output**
+
+![image](docs/events.png)
+
+**Detailed output**
+
+![image](docs/events-detailed.png)
+
 # License
-moleculer-java-repl is available under the [MIT license](https://tldrlegal.com/license/mit-license).
+
+Moleculer-java-repl is available under the [MIT license](https://tldrlegal.com/license/mit-license).

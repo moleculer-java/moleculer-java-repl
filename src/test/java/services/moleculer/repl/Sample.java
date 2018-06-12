@@ -43,6 +43,8 @@ public class Sample {
 			// Create Service Broker config
 			ServiceBrokerConfig cfg = new ServiceBrokerConfig();
 
+			cfg.setNodeID("node-2");
+			
 			TcpTransporter t = new TcpTransporter();
 			t.setDebug(false);
 			cfg.setTransporter(t);
