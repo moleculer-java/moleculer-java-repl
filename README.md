@@ -238,6 +238,7 @@ mol $ call math.add --a 5 --b Bob --c --no-d --e.f "hello"
 ```
 
 #### Call with JSON string parameter
+
 ```bash
 mol $ call math.add {"a": 5, "b": "Bob", "c": true, "d": false, "e": { "f": "hello" } }
 ```
@@ -255,6 +256,7 @@ Get health info from `node-12` node
 ```bash
 mol $ dcall node-12 $node.health
 ```
+
 >Parameter passing is similar to `call` command.
 
 ### Emit an event
@@ -270,6 +272,19 @@ mol $ emit user.created --a 5 --b Bob --c --no-d --e.f "hello"
 ```
 
 Params will be `{"a":5, "b":"Bob", "c":"--no-d", "e":{ "f":"hello" }}`
+
+### Benchmark services
+
+Moleculer REPL module has a new bench command to measure your services.
+
+```bash
+# Call service until 5 seconds (default)
+mol $ bench $node.list
+```
+
+**Output**
+
+![image](docs/bench.png)
 
 # License
 
