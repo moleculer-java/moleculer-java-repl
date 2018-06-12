@@ -32,7 +32,7 @@ dependencies {
 ServiceBroker broker = new ServiceBroker();
 broker.start();
 
-// Start console
+// Switch to REPL mode
 broker.repl();
 ```
 
@@ -40,7 +40,7 @@ broker.repl();
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<beans>
+<beans xmlns="...">
 
 	<!-- PACKAGE OF YOUR MOLECULER SERVICES -->
 
@@ -78,6 +78,49 @@ broker.repl();
 ## Screenshot
 
 ![Java-based REPL Console](https://github.com/moleculer-java/moleculer-java-repl/raw/master/docs/console-java.png)
+
+
+## REPL Commands
+
+```bash
+mol$ help
+
+Commands:
+
+  actions [options]                           List of actions
+  bench <action> [jsonParams]                 Benchmark a service
+  broadcast <eventName>                       Broadcast an event
+  broadcastLocal <eventName>                  Broadcast an event locally
+  call <actionName> [jsonParams]              Call an action
+  clear <pattern>                             Delete cached entries by pattern
+  dcall <nodeID> <actionName> [jsonParams]    Direct call an action
+  emit <eventName>                            Emit an event
+  env                                         Lists of environment properties
+  events [options]                            List of event listeners
+  exit, q                                     Exit application
+  find <fullClassName>                        Find a class or resource
+  gc                                          Invoke garbage collector
+  info                                        Information about the broker
+  memory                                      Show memory usage
+  nodes [options]                             List of nodes
+  props                                       List of Java properties
+  services [options]                          List of services
+  threads                                     List of threads
+```
+
+### List nodes
+```bash
+mol$ nodes
+```
+
+**Options**
+```
+    --help                    output usage information
+    --details, -d             detailed list
+    --all, -a                 list all (offline) nodes
+    --raw                     print service registry as JSON
+    --save [filename], -a     save service registry to JSON file
+```
 
 # License
 moleculer-java-repl is available under the [MIT license](https://tldrlegal.com/license/mit-license).
