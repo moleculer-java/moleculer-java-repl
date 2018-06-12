@@ -31,6 +31,7 @@ import static services.moleculer.repl.ColorWriter.YELLOW;
 import static services.moleculer.util.CommonUtils.formatNamoSec;
 
 import java.io.PrintWriter;
+import java.util.concurrent.TimeUnit;
 
 import io.datatree.Tree;
 import services.moleculer.ServiceBroker;
@@ -62,11 +63,11 @@ public class DCall extends Command {
 	@Override
 	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		String nodeID = parameters[0];
-		String name = parameters[1];
+		String name = parameters[1].replace('\"', ' ').replace('\'', ' ').trim();
 		Tree params = getPayload(2, parameters);
 		out.println(YELLOW + ">> Call '" + name + "' on '" + nodeID + "' with params: " + params.toString("colorized-json", false));
 		long start = System.nanoTime();
-		Tree rsp = broker.call(name, params, CallOptions.nodeID(nodeID)).waitFor();
+		Tree rsp = broker.call(name, params, CallOptions.nodeID(nodeID)).toCompletableFuture().get(15, TimeUnit.SECONDS);
 		long duration = System.nanoTime() - start;
 		out.println();
 		out.println(CYAN + "Execution time: " + formatNamoSec(duration));

@@ -199,6 +199,78 @@ mol $ events
 
 ![image](docs/events-detailed.png)
 
+### Show common information
+
+```bash
+mol $ info
+```
+
+**Output**
+
+![image](docs/info.png)
+
+### List environment variables
+
+```bash
+mol $ env
+```
+
+### List system properties of Java
+
+```bash
+mol $ props
+```
+
+### Call an action
+
+```bash
+mol $ call math.add {"a":3,"b":4}
+```
+
+**Output**
+
+![image](docs/call.png)
+
+#### Call an action with parameters
+
+```bash
+mol $ call math.add --a 5 --b Bob --c --no-d --e.f "hello"
+```
+
+#### Call with JSON string parameter
+```bash
+mol $ call math.add {"a": 5, "b": "Bob", "c": true, "d": false, "e": { "f": "hello" } }
+```
+
+Params will be `{"a":5, "b":"Bob", "c":"--no-d", "e":{ "f":"hello" }}`
+
+**Output**
+
+![image](docs/call2.png)
+
+### Direct call
+
+Get health info from `node-12` node
+
+```bash
+mol $ dcall node-12 $node.health
+```
+>Parameter passing is similar to `call` command.
+
+### Emit an event
+
+```bash
+mol $ emit user.created
+```
+
+#### Emit an event with parameters
+
+```bash
+mol $ emit user.created --a 5 --b Bob --c --no-d --e.f "hello"
+```
+
+Params will be `{"a":5, "b":"Bob", "c":"--no-d", "e":{ "f":"hello" }}`
+
 # License
 
 Moleculer-java-repl is available under the [MIT license](https://tldrlegal.com/license/mit-license).

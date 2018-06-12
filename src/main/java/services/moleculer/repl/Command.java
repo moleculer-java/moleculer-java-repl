@@ -148,6 +148,9 @@ public abstract class Command {
 								payload.put(name, Integer.parseInt(p));
 							}
 						} catch (Exception notNumeric) {
+							if ((p.startsWith("\"") && p.endsWith("\"")) || (p.startsWith("'") && p.endsWith("'"))) {
+								p = p.replace('\"', ' ').replace('\'', ' ').trim();
+							}
 							payload.put(name, p);
 						}
 					}
