@@ -286,6 +286,66 @@ mol $ bench $node.list
 
 ![image](docs/bench.png)
 
+```bash
+# Call service until 30 seconds
+mol $ bench $node.list --time 30
+```
+
+**Output**
+
+![image](docs/bench2.png)
+
+```bash
+# Call service 5000 times
+mol $ bench $node.list --num 5000
+```
+
+**Output**
+
+![image](docs/bench3.png)
+
+#### Parameters
+
+```bash
+mol $ bench math.add --time 10 --a 3 --b 6
+# or
+mol $ bench math.add --time 10 {"a":3,"b":6}
+```
+
+**Output**
+
+![image](docs/bench4.png)
+
+### Dump hierarchy of threads
+
+```bash
+mol $ threads
+```
+
+**Output**
+
+![image](docs/threads.png)
+
+### Show JVM's heap usage
+
+```bash
+mol $ memory
+```
+
+**Output**
+
+![image](docs/memory.png)
+
+### Invoke Garbage Collector
+
+```bash
+mol $ gc
+```
+
+**Output**
+
+![image](docs/gc.png)
+
 # License
 
 Moleculer-java-repl is available under the [MIT license](https://tldrlegal.com/license/mit-license).
