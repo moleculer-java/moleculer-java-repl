@@ -11,7 +11,7 @@ Java REPL (Interactive Developer Console) for [Moleculer](https://moleculer-java
 	<dependency>
 		<groupId>com.github.berkesa</groupId>
 		<artifactId>moleculer-java-repl</artifactId>
-		<version>1.0.2</version>
+		<version>1.0.3</version>
 		<scope>runtime</scope>
 	</dependency>
 </dependencies>
@@ -21,7 +21,7 @@ Java REPL (Interactive Developer Console) for [Moleculer](https://moleculer-java
 
 ```gradle
 dependencies {
-	compile group: 'com.github.berkesa', name: 'moleculer-java-repl', version: '1.0.2' 
+	compile group: 'com.github.berkesa', name: 'moleculer-java-repl', version: '1.0.3' 
 }
 ```
 
