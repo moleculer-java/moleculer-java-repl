@@ -25,8 +25,6 @@
  */
 package testcase;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import services.moleculer.service.Action;
 import services.moleculer.service.Name;
 import services.moleculer.service.Service;
@@ -34,17 +32,9 @@ import services.moleculer.service.Service;
 @Name("greeter")
 public class GreeterService extends Service {
 
-	@Autowired
-	private MyBean myBean;
-
 	@Name("hello")
 	public Action helloAction = ctx -> {
 		return "Hello " + ctx.params.asString();
-	};
-
-	@Name("test")
-	public Action testAction = ctx -> {
-		return myBean.add(ctx.params.get("a", 0), ctx.params.get("b", 0));
 	};
 	
 }

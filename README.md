@@ -347,6 +347,122 @@ mol $ gc
 
 ![image](docs/gc.png)
 
+## User-defined commands
+
+You can define your custom REPL commands in broker options to extend Moleculer REPL commands.
+
+**Source of the "hello" console command**
+
+```java
+package my.commands;
+
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+
+import services.moleculer.ServiceBroker;
+import services.moleculer.repl.Command;
+import services.moleculer.service.Name;
+
+@Name("hello")
+public class HelloCommand extends Command {
+
+	public HelloCommand() {
+		option("uppercase, -u", "uppercase the name");
+	}
+	
+	@Override
+	public String getDescription() {
+		return "Call the greeter.hello service with name";
+	}
+
+	@Override
+	public String getUsage() {
+		return "hello [options] <name>";
+	}
+
+	@Override
+	public int getNumberOfRequiredParameters() {
+		
+		// One parameter (the "name") is required
+		return 1;
+	}
+
+	@Override
+	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
+		
+		// Parse parameters
+		List<String> params = Arrays.asList(parameters);
+		boolean uppercase = params.contains("--uppercase") || params.contains("-u");
+		
+		// Last parameter is the name
+		String name = parameters[parameters.length - 1];
+		if (uppercase) {
+			name = name.toUpperCase();
+		}
+		
+		// Call the "greeter.hello" service
+		broker.call("greeter.hello", name).then(rsp -> {
+			
+			// Print response
+			out.println(rsp.asString());
+			
+		}).catchError(err -> {
+			
+			// Print error
+			err.printStackTrace(out);
+			
+		});
+	}
+}
+```
+
+**Source of the "greeter.hello" action**
+
+```java
+package my.services;
+
+import services.moleculer.service.*;
+
+@Name("greeter")
+public class GreeterService extends Service {
+
+	@Name("hello")
+	public Action helloAction = ctx -> {
+		return "Hello " + ctx.params.asString();
+	};
+	
+}
+```
+
+**Installation of the "hello" command from code**
+
+```java
+ServiceBroker broker = new ServiceBroker();
+
+// Start local REPL console
+LocalRepl repl = new LocalRepl();
+repl.setPackagesToScan("my.commands");
+broker.createService("$repl", repl);
+```
+
+**Installation of the "hello" command with Spring**
+
+```xml
+<bean id="$repl" class="services.moleculer.repl.LocalRepl">
+	<property name="packagesToScan" value="my.commands" />		
+</bean>
+```
+
+**Output of "help" command**
+
+![image](docs/custom.png)
+
+```bash
+mol $ hello -u John
+Hello JOHN
+```
+
 # License
 
 Moleculer-java-repl is available under the [MIT license](https://tldrlegal.com/license/mit-license).
