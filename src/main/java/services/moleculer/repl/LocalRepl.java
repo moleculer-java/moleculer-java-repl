@@ -156,6 +156,9 @@ public class LocalRepl extends Repl implements Runnable {
 								Command command = (Command) type.newInstance();
 								String name = nameOf(command, false).toLowerCase();
 								commands.put(name, command);
+								
+								// Log
+								logger.info("Command \"" + name + "\" registered.");
 							}
 						}
 					} catch (Throwable cause) {
@@ -360,7 +363,7 @@ public class LocalRepl extends Repl implements Runnable {
 		return packagesToScan;
 	}
 
-	public void setPackagesToScan(String[] packagesToScan) {
+	public void setPackagesToScan(String... packagesToScan) {
 		this.packagesToScan = packagesToScan;
 	}
 

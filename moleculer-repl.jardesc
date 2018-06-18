@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jardesc>
-    <jar path="C:/temp/moleculer-test/lib/moleculer-repl-1.0.2.jar"/>
+    <jar path="C:/temp/moleculer-test/lib/moleculer-repl-1.0.3.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/moleculer-java-repl/moleculer-repl.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
@@ -11,6 +11,7 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=moleculer-java-repl/src\/test\/java&lt;testcase"/>
         <javaElement handleIdentifier="=moleculer-java-repl/src\/main\/java"/>
     </selectedElements>
 </jardesc>

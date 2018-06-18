@@ -31,6 +31,7 @@ import java.util.LinkedList;
 
 import io.datatree.Tree;
 import services.moleculer.ServiceBroker;
+import services.moleculer.util.CheckedTree;
 
 /**
  * Interface of all interactive console command implementations.
@@ -155,6 +156,27 @@ public abstract class Command {
 						}
 					}
 					name = null;
+				}
+			}
+			if (name != null && payload.isEmpty()) {
+				if ("true".equals(name)) {
+					payload = new CheckedTree(true);
+				} else if ("false".equals(name)) {
+					payload = new CheckedTree(false);
+				} else {
+					try {
+						if (name.contains(".")) {
+							payload = new CheckedTree(Double.parseDouble(name));
+						} else {
+							payload = new CheckedTree(Integer.parseInt(name));
+						}
+					} catch (Exception notNumeric) {
+						if ((name.startsWith("\"") && name.endsWith("\""))
+								|| (name.startsWith("'") && name.endsWith("'"))) {
+							name = name.replace('\"', ' ').replace('\'', ' ').trim();
+						}
+						payload = new CheckedTree(name);
+					}
 				}
 			}
 			return payload;

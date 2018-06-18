@@ -94,6 +94,9 @@ public class Bench extends Command {
 		String nodeID = flags.get("nodeID", "");
 		int lastIndex = flags.get("lastIndex", 0);
 		int max = flags.get("max", 100);
+		if (num > 0) {
+			max = Math.min(max, (int) num);
+		}
 		Tree params = getPayload(lastIndex + 1, parameters);
 
 		if (num < 1 && time < 1) {

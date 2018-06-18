@@ -34,6 +34,7 @@ import services.moleculer.service.Action;
 import services.moleculer.service.Name;
 import services.moleculer.service.Service;
 import services.moleculer.transporter.TcpTransporter;
+import testcase.GreeterService;
 
 public class Sample {
 
@@ -67,6 +68,9 @@ public class Sample {
 				@Name("test")
 				public Action test = ctx -> {
 
+					if (ctx.params.get("a", 0) == 1) {
+						throw new Exception("X");
+					}
 					return ctx.params.get("a", 0) + ctx.params.get("b", 0);
 
 				};
@@ -78,12 +82,17 @@ public class Sample {
 
 			});
 
+			// Create greeter
+			broker.createService(new GreeterService());
+			
 			// Start Service Broker
 			broker.start();
 			
 			// Start local REPL console
-			broker.repl();
-
+			LocalRepl repl = new LocalRepl();
+			repl.setPackagesToScan("services.moleculer.repl.greeter");
+			broker.createService("$repl", repl);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

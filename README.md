@@ -40,37 +40,38 @@ broker.repl();
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="...">
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	   http://www.springframework.org/schema/context
+	   http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<!-- PACKAGE OF YOUR MOLECULER SERVICES -->
+	<!-- ENABLE ANNOTATION PROCESSING -->
 
-	<context:component-scan base-package="package.of.my.services" />
+	<context:annotation-config />
 
-	<!-- INSTALL DEVELOPER CONSOLE -->
+	<!-- LOADER OF MOLECULER SERVICES -->
 
-	<bean id="$repl" class="services.moleculer.repl.LocalRepl" />
-
-	<!-- CONFIGURE TRANSPORTER -->
-
-	<bean id="transporter" class="services.moleculer.transporter.TcpTransporter" />
-
-	<!-- OTHER SERVICE BROKER SETTINGS -->
-
-	<bean id="brokerConfig" class="services.moleculer.config.ServiceBrokerConfig">
-		<property name="nodeID" value="node-1" />
-		<property name="transporter" ref="transporter" />
+	<bean id="registrator" class="services.moleculer.config.SpringRegistrator" depends-on="broker">
+		<property name="packagesToScan" value="my.service.package" />
 	</bean>
 
-	<!-- CREATE SERVICE BROKER INSTANCE -->
+	<!-- SERVICE BROKER INSTANCE -->
 
-	<bean id="broker" class="services.moleculer.ServiceBroker"
-		init-method="start" destroy-method="stop">
+	<bean id="broker" class="services.moleculer.ServiceBroker" init-method="start" destroy-method="stop">
 		<constructor-arg ref="brokerConfig" />
 	</bean>
 
-	<!-- MOLECULER / SPRING INTEGRATOR -->
+	<!-- SERVICE BROKER SETTINGS -->
 
-	<bean id="registrator" class="services.moleculer.config.SpringRegistrator" />
+	<bean id="brokerConfig" class="services.moleculer.config.ServiceBrokerConfig">
+		<property name="nodeID" value="node-1" />
+	</bean>
+
+	<!-- LOCAL DEVELOPER CONSOLE -->
+
+	<bean id="$repl" class="services.moleculer.repl.LocalRepl" />
 
 </beans>
 ```
