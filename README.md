@@ -458,6 +458,8 @@ broker.createService("$repl", repl);
 
 ![image](docs/custom.png)
 
+**Invoke the "hello" command**
+
 ```bash
 mol $ hello -u John
 Hello JOHN
