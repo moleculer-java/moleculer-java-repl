@@ -67,7 +67,7 @@ public class DCall extends Command {
 		Tree params = getPayload(2, parameters);
 		out.println(YELLOW + ">> Call '" + name + "' on '" + nodeID + "' with params: " + params.toString("colorized-json", false));
 		long start = System.nanoTime();
-		Tree rsp = broker.call(name, params, CallOptions.nodeID(nodeID)).toCompletableFuture().get(15, TimeUnit.SECONDS);
+		Tree rsp = broker.call(name, params, CallOptions.nodeID(nodeID)).waitFor(15, TimeUnit.SECONDS);
 		long duration = System.nanoTime() - start;
 		out.println();
 		out.println(CYAN + "Execution time: " + formatNamoSec(duration));

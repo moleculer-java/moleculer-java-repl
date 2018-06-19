@@ -66,7 +66,7 @@ public class Call extends Command {
 		Tree params = getPayload(parameters);
 		out.println(YELLOW + ">> Call '" + name + "' with params: " + params.toString("colorized-json", false));
 		long start = System.nanoTime();
-		Tree rsp = broker.call(name, params).toCompletableFuture().get(15, TimeUnit.SECONDS);
+		Tree rsp = broker.call(name, params).waitFor(15, TimeUnit.SECONDS);
 		long duration = System.nanoTime() - start;
 		out.println();
 		out.println(CYAN + "Execution time: " + formatNamoSec(duration));
