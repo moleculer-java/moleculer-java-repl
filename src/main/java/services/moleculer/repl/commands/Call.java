@@ -38,6 +38,7 @@ import io.datatree.Tree;
 import services.moleculer.ServiceBroker;
 import services.moleculer.repl.Command;
 import services.moleculer.service.Name;
+import services.moleculer.stream.PacketStream;
 
 /**
 * Calls the specified action.
@@ -67,7 +68,10 @@ public class Call extends Command {
 		out.println(YELLOW + ">> Call '" + name + "' with params: " + params.toString("colorized-json", false));
 		long start = System.nanoTime();
 		Tree rsp = broker.call(name, params).waitFor(15, TimeUnit.SECONDS);
-		long duration = System.nanoTime() - start;
+		dumpResponse(out, rsp, System.nanoTime() - start);
+	}
+
+	protected static void dumpResponse(PrintWriter out, Tree rsp, long duration) {
 		out.println();
 		out.println(CYAN + "Execution time: " + formatNamoSec(duration));
 		out.println();
@@ -76,8 +80,48 @@ public class Call extends Command {
 		if (rsp == null) {
 			out.println(GRAY + "'null' response");
 		} else {
-			out.println(rsp.toString("colorized-json", true, true));
+			if (rsp.getType() == PacketStream.class) {
+				PacketStream stream = (PacketStream) rsp.asObject();
+				stream.onPacket((bytes, error, closed) -> {
+					if (bytes != null && bytes.length > 0) {
+						out.println();
+						out.println(GREEN + bytes.length + " bytes received:");
+						out.println();
+						writeHexBytes(out, bytes);
+						out.println();
+					}
+					if (error != null) {
+						error.printStackTrace(out);
+					}
+					if (closed) {
+						out.println("Stream closed successfully.");
+					}
+				});
+			} else {
+				out.println(rsp.toString("colorized-json", true, true));
+			}
 		}
 	}
-
+	
+	protected static void writeHexBytes(PrintWriter out, byte[] bytes) {
+		String s;
+		int i, j;
+		for (i = 0; i < bytes.length; i++) {
+			s = Integer.toHexString(((int) bytes[i] & 0xff)).toUpperCase();
+			if (s.length() < 2) {
+				out.write('0');
+			}
+			out.write(s);
+			out.write(' ');
+			if (i > 0) {
+				j = i + 1;
+				if (j % 20 == 0) {
+					out.println();
+				} else if (j % 5 == 0) {
+					out.write("| ");		
+				}
+			}
+		}
+	}
+	
 }

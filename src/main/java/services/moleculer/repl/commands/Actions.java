@@ -86,7 +86,7 @@ public class Actions extends Command {
 		Tree infos = getNodeInfos(broker, transporter);
 		String localNodeID = broker.getNodeID();
 
-		HashMap<String, HashMap<String, Tree>> actionMap = new HashMap<>();
+		HashMap<String, HashMap<String, Tree>> actionMap = new HashMap<>(512);
 		for (Tree info : infos) {
 			String nodeID = info.getName();
 			Tree services = info.get("services");
@@ -99,10 +99,11 @@ public class Actions extends Command {
 					continue;
 				}
 				for (Tree action : actions) {
+					action.put("nodeID", nodeID);
 					String actionName = action.get("name", "unknown");
 					HashMap<String, Tree> configs = actionMap.get(actionName);
 					if (configs == null) {
-						configs = new HashMap<String, Tree>();
+						configs = new HashMap<String, Tree>(64);
 						actionMap.put(actionName, configs);
 					}
 					configs.put(nodeID, action);

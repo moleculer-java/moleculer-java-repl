@@ -85,7 +85,7 @@ public class Services extends Command {
 		Tree infos = getNodeInfos(broker, transporter);
 		String localNodeID = broker.getNodeID();
 
-		HashMap<String, HashMap<String, Tree>> serviceMap = new HashMap<>();
+		HashMap<String, HashMap<String, Tree>> serviceMap = new HashMap<>(512);
 		for (Tree info : infos) {
 			String nodeID = info.getName();
 			Tree services = info.get("services");
@@ -93,10 +93,11 @@ public class Services extends Command {
 				continue;
 			}
 			for (Tree service : services) {
+				service.put("nodeID", nodeID);
 				String serviceName = service.get("name", "unknown");
 				HashMap<String, Tree> configs = serviceMap.get(serviceName);
 				if (configs == null) {
-					configs = new HashMap<String, Tree>();
+					configs = new HashMap<String, Tree>(64);
 					serviceMap.put(serviceName, configs);
 				}
 				configs.put(nodeID, service);

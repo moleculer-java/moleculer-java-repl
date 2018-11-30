@@ -102,32 +102,32 @@ public class LocalRepl extends Repl implements Runnable {
 	@Override
 	public void started(ServiceBroker broker) throws Exception {
 		super.started(broker);
-		
+
 		// We ensure that the first command will run fast
 		if (isEnabled()) {
 			broker.getConfig().getExecutor().execute(() -> {
-				try {					
+				try {
 					onCommand(new PrintWriter(new Writer() {
-						
+
 						@Override
 						public void write(char[] cbuf, int off, int len) throws IOException {
 						}
-						
+
 						@Override
 						public void flush() throws IOException {
 						}
-						
+
 						@Override
 						public void close() throws IOException {
 						}
-						
+
 					}), "info");
 				} catch (Exception ignored) {
 				}
 			});
 		}
 	}
-	
+
 	// --- START READING INPUT ---
 
 	@Override
@@ -138,7 +138,8 @@ public class LocalRepl extends Repl implements Runnable {
 
 		// Load default commands
 		load("Actions", "Broadcast", "BroadcastLocal", "Call", "Clear", "Close", "DCall", "Emit", "Env", "Events",
-				"Exit", "Find", "Gc", "Info", "Memory", "Nodes", "Props", "Services", "Threads", "Bench");
+				"Exit", "Find", "Gc", "Info", "Memory", "Nodes", "Props", "Services", "Threads", "Bench", "Debug",
+				"Stream");
 
 		// Load custom commands
 		if (packagesToScan != null && packagesToScan.length > 0) {
@@ -156,7 +157,7 @@ public class LocalRepl extends Repl implements Runnable {
 								Command command = (Command) type.newInstance();
 								String name = nameOf(command, false).toLowerCase();
 								commands.put(name, command);
-								
+
 								// Log
 								logger.info("Command \"" + name + "\" registered.");
 							}
@@ -312,7 +313,7 @@ public class LocalRepl extends Repl implements Runnable {
 		out.println();
 		out.println(table);
 	}
-	
+
 	protected void printCommandHelp(PrintWriter out, String name) {
 		Command impl = commands.get(name);
 		if (impl == null) {

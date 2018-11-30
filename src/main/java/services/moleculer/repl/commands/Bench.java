@@ -37,6 +37,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +47,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import io.datatree.Tree;
 import services.moleculer.ServiceBroker;
 import services.moleculer.context.CallOptions;
+import services.moleculer.error.ServiceNotFoundError;
 import services.moleculer.repl.Command;
 import services.moleculer.service.Name;
 
@@ -143,11 +145,15 @@ public class Bench extends Command {
 	protected void doRequest(ServiceBroker broker, BenchData data) {
 		data.reqCount.incrementAndGet();
 		long startTime = System.nanoTime();
-		broker.call(data.action, data.params, data.opts).then(res -> {
-			handleResponse(broker, data, startTime, null);
-		}).catchError(cause -> {
-			handleResponse(broker, data, startTime, cause);
-		});
+		try {
+			broker.call(data.action, data.params, data.opts).then(res -> {
+				handleResponse(broker, data, startTime, null);
+			}).catchError(cause -> {
+				handleResponse(broker, data, startTime, cause);
+			});			
+		} catch (Exception err) {
+			handleResponse(broker, data, startTime, err);
+		}
 	}
 
 	protected void handleResponse(ServiceBroker broker, BenchData data, long startTime, Throwable cause) {
@@ -162,6 +168,20 @@ public class Bench extends Command {
 		if (cause != null) {
 			if (data.errorCount.incrementAndGet() == 1) {
 				data.cause = cause;
+			}
+			Throwable type;
+			if (cause instanceof CompletionException) {
+				type = ((CompletionException) cause).getCause();
+			} else {
+				type = cause;
+			}
+			if (type instanceof ServiceNotFoundError) {
+				if (data.finished.compareAndSet(false, true)) {
+					if (timer != null) {
+						timer.cancel(true);
+					}
+				}
+				return;
 			}
 		}
 

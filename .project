@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>moleculer-java-repl</name>
-	<comment>Project moleculer-java-repl created by Buildship.</comment>
+	<comment>Java implementation of REPL module for Moleculer framework.</comment>
 	<projects>
 	</projects>
 	<buildSpec>

@@ -26,72 +26,49 @@
 package services.moleculer.repl;
 
 import services.moleculer.ServiceBroker;
-import services.moleculer.cacher.Cache;
 import services.moleculer.config.ServiceBrokerConfig;
-import services.moleculer.eventbus.Listener;
-import services.moleculer.eventbus.Subscribe;
-import services.moleculer.service.Action;
-import services.moleculer.service.Name;
-import services.moleculer.service.Service;
-import services.moleculer.transporter.TcpTransporter;
-import testcase.GreeterService;
+import services.moleculer.serializer.MsgPackSerializer;
+import services.moleculer.transporter.RedisTransporter;
+import services.moleculer.transporter.Transporter;
 
 public class Sample {
-
+	
 	public static void main(String[] args) throws Exception {
 		try {
 			
 			// Create Service Broker config
 			ServiceBrokerConfig cfg = new ServiceBrokerConfig();
 
-			cfg.setNodeID("node-2");
+			// Unique nodeID
+			cfg.setNodeID("node2");
+
+			// Define a brokerless transporter
+			Transporter t = new RedisTransporter("192.168.51.100");
+
+			// TcpTransporter t = new TcpTransporter();
+			// t.setDebug(true);
+			// t.setUseHostname(false);
 			
-			TcpTransporter t = new TcpTransporter();
-			t.setDebug(false);
+			t.setSerializer(new MsgPackSerializer());
 			cfg.setTransporter(t);
 
 			// Create Service Broker (by config)
 			ServiceBroker broker = new ServiceBroker(cfg);
 
-			// Install sample service
-			broker.createService(new Service("math") {
-
-				@Name("add")
-				@Cache(keys = { "a", "b" }, ttl = 30)
-				public Action add = ctx -> {
-
-					//broker.getLogger().info("Call " + ctx.params);
-					return ctx.params.get("a", 0) + ctx.params.get("b", 0);
-
-				};
-
-				@Name("test")
-				public Action test = ctx -> {
-
-					if (ctx.params.get("a", 0) == 1) {
-						throw new Exception("X");
-					}
-					return ctx.params.get("a", 0) + ctx.params.get("b", 0);
-
-				};
-
-				@Subscribe("foo.*")
-				public Listener listener = payload -> {
-					System.out.println("Received: " + payload);
-				};
-
-			});
-
-			// Create greeter
-			broker.createService(new GreeterService());
-			
 			// Start Service Broker
 			broker.start();
-			
-			// Start local REPL console
+
+			// Create local REPL developer console
 			LocalRepl repl = new LocalRepl();
-			repl.setPackagesToScan("services.moleculer.repl.greeter");
+
+			// Load custom (user-defined) commands
+			repl.setPackagesToScan("testcase");
+
+			// Install REPL service (developer console is a Moleculer Service)
 			broker.createService("$repl", repl);
+			
+			Thread.sleep(3000);
+			System.out.println("NOD2 + REMOTE + CONSOLE");
 			
 		} catch (Exception e) {
 			e.printStackTrace();
