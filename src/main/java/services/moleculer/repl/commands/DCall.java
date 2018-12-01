@@ -25,10 +25,7 @@
  */
 package services.moleculer.repl.commands;
 
-import static services.moleculer.repl.ColorWriter.CYAN;
-import static services.moleculer.repl.ColorWriter.GREEN;
 import static services.moleculer.repl.ColorWriter.YELLOW;
-import static services.moleculer.util.CommonUtils.formatNamoSec;
 
 import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
@@ -36,14 +33,13 @@ import java.util.concurrent.TimeUnit;
 import io.datatree.Tree;
 import services.moleculer.ServiceBroker;
 import services.moleculer.context.CallOptions;
-import services.moleculer.repl.Command;
 import services.moleculer.service.Name;
 
 /**
 * Direct call an action.
 */
 @Name("dcall")
-public class DCall extends Command {
+public class DCall extends Call {
 
 	@Override
 	public String getDescription() {
@@ -68,17 +64,7 @@ public class DCall extends Command {
 		out.println(YELLOW + ">> Call '" + name + "' on '" + nodeID + "' with params: " + params.toString("colorized-json", false));
 		long start = System.nanoTime();
 		Tree rsp = broker.call(name, params, CallOptions.nodeID(nodeID)).waitFor(15, TimeUnit.SECONDS);
-		long duration = System.nanoTime() - start;
-		out.println();
-		out.println(CYAN + "Execution time: " + formatNamoSec(duration));
-		out.println();
-		out.println(GREEN + "Response:");
-		out.println();
-		if (rsp == null) {
-			out.println("'null' response");
-		} else {
-			out.println(rsp.toString("colorized-json", true, true));
-		}
+		dumpResponse(out, rsp, System.nanoTime() - start);
 	}
 
 }

@@ -62,14 +62,14 @@ dependencies {
     // --- MOLECULER CORE ---
     	    
 	// https://mvnrepository.com/artifact/com.github.berkesa/moleculer-java
-	compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.0.5'
+	compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.0.6'
 	// compile project(':moleculer-java')
 		
 	// --- ANSI TERMINAL ---
 	
 	// https://mvnrepository.com/artifact/com.diogonunes/JCDP
 	compile group: 'com.diogonunes', name: 'JCDP', version: '2.0.3.1'
-		
+
 }
 
 sourceCompatibility = 1.8
@@ -105,7 +105,7 @@ modifyPom {
             dependency {
                 groupId 'com.github.berkesa'
                 artifactId 'moleculer-java'
-                version '1.0.5'
+                version '1.0.6'
                 scope 'runtime'
             }
             dependency {

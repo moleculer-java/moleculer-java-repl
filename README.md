@@ -11,7 +11,7 @@ Java REPL (Interactive Developer Console) for [Moleculer](https://moleculer-java
 	<dependency>
 		<groupId>com.github.berkesa</groupId>
 		<artifactId>moleculer-java-repl</artifactId>
-		<version>1.0.3</version>
+		<version>1.0.4</version>
 		<scope>runtime</scope>
 	</dependency>
 </dependencies>
@@ -21,7 +21,7 @@ Java REPL (Interactive Developer Console) for [Moleculer](https://moleculer-java
 
 ```gradle
 dependencies {
-	compile group: 'com.github.berkesa', name: 'moleculer-java-repl', version: '1.0.3' 
+	compile group: 'com.github.berkesa', name: 'moleculer-java-repl', version: '1.0.4' 
 }
 ```
 
@@ -51,11 +51,13 @@ broker.repl();
 
 	<context:annotation-config />
 
-	<!-- LOADER OF MOLECULER SERVICES -->
+	<!-- PACKAGE OF THE MOLECULER SERVICES -->
+	
+	<context:component-scan base-package="my.services" />
 
-	<bean id="registrator" class="services.moleculer.config.SpringRegistrator" depends-on="broker">
-		<property name="packagesToScan" value="my.service.package" />
-	</bean>
+	<!-- SPRING REGISTRATOR FOR MOLECULER SERVICES -->
+
+	<bean id="registrator" class="services.moleculer.config.SpringRegistrator" depends-on="broker" />
 
 	<!-- SERVICE BROKER INSTANCE -->
 

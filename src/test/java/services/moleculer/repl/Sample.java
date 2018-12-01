@@ -27,9 +27,7 @@ package services.moleculer.repl;
 
 import services.moleculer.ServiceBroker;
 import services.moleculer.config.ServiceBrokerConfig;
-import services.moleculer.serializer.MsgPackSerializer;
-import services.moleculer.transporter.RedisTransporter;
-import services.moleculer.transporter.Transporter;
+import services.moleculer.transporter.TcpTransporter;
 
 public class Sample {
 	
@@ -43,13 +41,10 @@ public class Sample {
 			cfg.setNodeID("node2");
 
 			// Define a brokerless transporter
-			Transporter t = new RedisTransporter("192.168.51.100");
-
-			// TcpTransporter t = new TcpTransporter();
-			// t.setDebug(true);
-			// t.setUseHostname(false);
+			TcpTransporter t = new TcpTransporter();
+			t.setUseHostname(false);			
+			// t.setSerializer(new MsgPackSerializer());
 			
-			t.setSerializer(new MsgPackSerializer());
 			cfg.setTransporter(t);
 
 			// Create Service Broker (by config)
@@ -64,12 +59,9 @@ public class Sample {
 			// Load custom (user-defined) commands
 			repl.setPackagesToScan("testcase");
 
-			// Install REPL service (developer console is a Moleculer Service)
+			// Install REPL service (REPL console is a Moleculer Service)
 			broker.createService("$repl", repl);
-			
-			Thread.sleep(3000);
-			System.out.println("NOD2 + REMOTE + CONSOLE");
-			
+					
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

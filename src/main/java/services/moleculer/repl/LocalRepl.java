@@ -139,7 +139,7 @@ public class LocalRepl extends Repl implements Runnable {
 		// Load default commands
 		load("Actions", "Broadcast", "BroadcastLocal", "Call", "Clear", "Close", "DCall", "Emit", "Env", "Events",
 				"Exit", "Find", "Gc", "Info", "Memory", "Nodes", "Props", "Services", "Threads", "Bench", "Debug",
-				"Stream");
+				"Stream", "Ping");
 
 		// Load custom commands
 		if (packagesToScan != null && packagesToScan.length > 0) {
@@ -272,6 +272,29 @@ public class LocalRepl extends Repl implements Runnable {
 			Command impl = commands.get(cmd);
 			if (impl == null) {
 				out.println("The \"" + cmd + "\" command is unknown.");
+
+				// Suggest a command
+				if (cmd.length() > 1) {
+					int maxCount = 0;
+					String suggestion = "";
+					char[] chars = cmd.toCharArray();
+					for (String test : commands.keySet()) {
+						int count = 0;
+						for (char c : chars) {
+							if (test.indexOf(c) > -1) {
+								count++;
+							}
+						}
+						if ((count > maxCount) || (count == maxCount && test.length() < suggestion.length())) {
+							maxCount = count;
+							suggestion = test;
+						}
+					}
+					if (100 * maxCount / cmd.length() > 70) {
+						out.println("Dou you mean \"" + suggestion + "\"?");
+					}
+				}
+
 				out.println();
 				printHelp(out, false);
 				out.println();
