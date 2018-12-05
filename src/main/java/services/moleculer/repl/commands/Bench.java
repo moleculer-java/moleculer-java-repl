@@ -47,6 +47,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import io.datatree.Tree;
 import services.moleculer.ServiceBroker;
 import services.moleculer.context.CallOptions;
+import services.moleculer.error.ServiceNotAvailableError;
 import services.moleculer.error.ServiceNotFoundError;
 import services.moleculer.repl.Command;
 import services.moleculer.service.Name;
@@ -62,6 +63,7 @@ public class Bench extends Command {
 		option("time <seconds>", "time of bench");
 		option("nodeID <nodeID>", "nodeID (direct call)");
 		option("max <number>", "max number of pending requests");
+		option("retry <number>", "max number of retries (default is 0)");		
 	}
 
 	@Override
@@ -87,12 +89,26 @@ public class Bench extends Command {
 	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		executor = broker.getConfig().getExecutor();
 
+		// Check parameter sequence
+		if (parameters[0].startsWith("--")) {
+			out.println("Invalid parameter sequence! Examples of appropriate \"bench\" commands:");
+			out.println();
+			out.println("bench $node.list --num 100");
+			out.println("bench $node.list --num 100 --nodeID node1");
+			out.println("bench $node.list --time 10");
+			out.println("bench $node.list --time 10 --max 10");
+			out.println("bench $node.actions --time 120 {\"onlyLocal\":true}");
+			out.println("bench $node.actions --time 120 onlyLocal true");
+			return;
+		}
+		
 		// Parse parameters
 		String action = parameters[0];
-		Collection<String> knownParams = Arrays.asList(new String[]{"num", "time", "nodeID", "max"});
+		Collection<String> knownParams = Arrays.asList(new String[]{"num", "time", "nodeID", "max", "retry"});
 		Tree flags = parseFlags(1, parameters, knownParams);
 		long num = flags.get("num", 0);
 		long time = flags.get("time", 0);
+		int retry = flags.get("retry", 0);
 		String nodeID = flags.get("nodeID", "");
 		int lastIndex = flags.get("lastIndex", 0);
 		int max = flags.get("max", 100);
@@ -107,9 +123,9 @@ public class Bench extends Command {
 		if (max < 1) {
 			max = 1;
 		}
-		CallOptions.Options opts = null;
+		CallOptions.Options opts = CallOptions.retryCount(retry);
 		if (nodeID != null && !nodeID.isEmpty()) {
-			opts = CallOptions.nodeID(nodeID);
+			opts = opts.nodeID(nodeID);
 		}
 
 		// Start timer
@@ -175,7 +191,7 @@ public class Bench extends Command {
 			} else {
 				type = cause;
 			}
-			if (type instanceof ServiceNotFoundError) {
+			if (type instanceof ServiceNotFoundError || type instanceof ServiceNotAvailableError) {
 				if (data.finished.compareAndSet(false, true)) {
 					if (timer != null) {
 						timer.cancel(true);

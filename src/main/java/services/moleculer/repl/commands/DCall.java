@@ -25,14 +25,6 @@
  */
 package services.moleculer.repl.commands;
 
-import static services.moleculer.repl.ColorWriter.YELLOW;
-
-import java.io.PrintWriter;
-import java.util.concurrent.TimeUnit;
-
-import io.datatree.Tree;
-import services.moleculer.ServiceBroker;
-import services.moleculer.context.CallOptions;
 import services.moleculer.service.Name;
 
 /**
@@ -41,6 +33,10 @@ import services.moleculer.service.Name;
 @Name("dcall")
 public class DCall extends Call {
 
+	public DCall() {
+		dcall = true;
+	}
+	
 	@Override
 	public String getDescription() {
 		return "Direct call an action";
@@ -54,17 +50,6 @@ public class DCall extends Call {
 	@Override
 	public int getNumberOfRequiredParameters() {
 		return 2;
-	}
-
-	@Override
-	public void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
-		String nodeID = parameters[0];
-		String name = parameters[1].replace('\"', ' ').replace('\'', ' ').trim();
-		Tree params = getPayload(2, parameters);
-		out.println(YELLOW + ">> Call '" + name + "' on '" + nodeID + "' with params: " + params.toString("colorized-json", false));
-		long start = System.nanoTime();
-		Tree rsp = broker.call(name, params, CallOptions.nodeID(nodeID)).waitFor(15, TimeUnit.SECONDS);
-		dumpResponse(out, rsp, System.nanoTime() - start);
 	}
 
 }

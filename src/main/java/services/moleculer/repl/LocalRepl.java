@@ -136,10 +136,10 @@ public class LocalRepl extends Repl implements Runnable {
 		// Find commands
 		commands.clear();
 
-		// Load default commands
+		// Load built-in commands
 		load("Actions", "Broadcast", "BroadcastLocal", "Call", "Clear", "Close", "DCall", "Emit", "Env", "Events",
 				"Exit", "Find", "Gc", "Info", "Memory", "Nodes", "Props", "Services", "Threads", "Bench", "Debug",
-				"Stream", "Ping");
+				"Ping");
 
 		// Load custom commands
 		if (packagesToScan != null && packagesToScan.length > 0) {
@@ -247,7 +247,7 @@ public class LocalRepl extends Repl implements Runnable {
 			if (command.length() == 0) {
 				return;
 			}
-			String[] tokens = command.split(" ");
+			String[] tokens = parseLine(command);
 			String cmd = tokens[0].toLowerCase();
 			out.println();
 			if (tokens.length > 1 && tokens[1].equals("--help")) {
@@ -291,10 +291,15 @@ public class LocalRepl extends Repl implements Runnable {
 						}
 					}
 					if (100 * maxCount / cmd.length() > 70) {
-						out.println("Dou you mean \"" + suggestion + "\"?");
+						out.println("Type \"help\" to list of all supported commands.");
+						out.println("Do you mean \"" + suggestion + "\"?");
+						out.println();
+						printCommandHelp(out, suggestion);
+						return;
 					}
 				}
 
+				// Show help
 				out.println();
 				printHelp(out, false);
 				out.println();
@@ -317,6 +322,51 @@ public class LocalRepl extends Repl implements Runnable {
 			cause.printStackTrace(out);
 			out.println();
 		}
+	}
+
+	protected String[] parseLine(String command) {
+		char delimiter = ' ';
+		boolean inToken = false;
+		StringBuilder writer = new StringBuilder(100);
+		LinkedList<String> tokens = new LinkedList<>();
+		for (int i = 0; i < command.length(); i++) {
+			char c = command.charAt(i);
+			if (inToken) {
+				if (c == delimiter) {
+					tokens.add(writer.toString());
+					writer.setLength(0);
+					if (c == '-') {
+						writer.append(c);
+					}
+					inToken = false;
+					continue;
+				}
+				writer.append(c);
+			} else {
+				if (c == '\'') {
+					delimiter = '\'';
+					inToken = true;
+				} else {
+					if (c == '"') {
+						delimiter = '"';
+						inToken = true;
+					} else if (c == ' ') {
+
+						// Skipping
+					} else {
+						delimiter = ' ';
+						writer.append(c);
+						inToken = true;
+					}
+				}
+			}
+			if (i == command.length() - 1 && writer.length() != 0) {
+				tokens.add(writer.toString());
+			}
+		}
+		String[] array = new String[tokens.size()];
+		tokens.toArray(array);
+		return array;
 	}
 
 	protected void printHelp(PrintWriter out, boolean telnet) {

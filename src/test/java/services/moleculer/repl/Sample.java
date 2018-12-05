@@ -26,11 +26,13 @@
 package services.moleculer.repl;
 
 import services.moleculer.ServiceBroker;
+import services.moleculer.breaker.CircuitBreaker;
 import services.moleculer.config.ServiceBrokerConfig;
-import services.moleculer.transporter.TcpTransporter;
+import services.moleculer.transporter.RedisTransporter;
+import services.moleculer.transporter.Transporter;
 
 public class Sample {
-	
+
 	public static void main(String[] args) throws Exception {
 		try {
 			
@@ -38,15 +40,25 @@ public class Sample {
 			ServiceBrokerConfig cfg = new ServiceBrokerConfig();
 
 			// Unique nodeID
-			cfg.setNodeID("node2");
+			cfg.setNodeID("node1");
 
 			// Define a brokerless transporter
-			TcpTransporter t = new TcpTransporter();
-			t.setUseHostname(false);			
+			// TcpTransporter t = new TcpTransporter();
+			// t.setUseHostname(false);
 			// t.setSerializer(new MsgPackSerializer());
+			Transporter t = new RedisTransporter("192.168.51.100");
 			
 			cfg.setTransporter(t);
-
+			
+			CircuitBreaker cb = new CircuitBreaker();
+			// cb.setMaxErrors(1);
+			// cb.setLockTimeout(5000);
+			cfg.setServiceInvoker(cb);
+			
+			// DefaultServiceInvoker di = new DefaultServiceInvoker();
+			// di.setWriteErrorsToLog(false);
+			// cfg.setServiceInvoker(di);
+			
 			// Create Service Broker (by config)
 			ServiceBroker broker = new ServiceBroker(cfg);
 
@@ -61,10 +73,10 @@ public class Sample {
 
 			// Install REPL service (REPL console is a Moleculer Service)
 			broker.createService("$repl", repl);
-					
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
+	
 }

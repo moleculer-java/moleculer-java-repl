@@ -87,13 +87,27 @@ public abstract class Command {
 						}
 					}
 				} else {
-					flags.put(name, param);
-					if (!skipNext) {
-						flags.put("lastIndex", i);
+					if (param.startsWith("--") && param.length() > 2) {
+						flags.putObject(name, null);
+						name = param.substring(2);
+						if (knownParams == null || knownParams.contains(name)) {
+							flags.put("lastIndex", i);
+							skipNext = false;
+						} else {
+							skipNext = true;
+						}						
+					} else {
+						flags.put(name, param);
+						if (!skipNext) {
+							flags.put("lastIndex", i);
+						}
+						name = null;
+						skipNext = false;
 					}
-					name = null;
-					skipNext = false;
 				}
+			}
+			if (name != null) {
+				flags.putObject(name, null);
 			}
 		}
 		return flags;
