@@ -28,8 +28,7 @@ package services.moleculer.repl;
 import services.moleculer.ServiceBroker;
 import services.moleculer.breaker.CircuitBreaker;
 import services.moleculer.config.ServiceBrokerConfig;
-import services.moleculer.transporter.RedisTransporter;
-import services.moleculer.transporter.Transporter;
+import services.moleculer.transporter.TcpTransporter;
 
 public class Sample {
 
@@ -43,10 +42,11 @@ public class Sample {
 			cfg.setNodeID("node1");
 
 			// Define a brokerless transporter
-			// TcpTransporter t = new TcpTransporter();
-			// t.setUseHostname(false);
+			TcpTransporter t = new TcpTransporter();
+			t.setUseHostname(false);
 			// t.setSerializer(new MsgPackSerializer());
-			Transporter t = new RedisTransporter("192.168.51.100");
+			
+			// Transporter t = new RedisTransporter("192.168.51.100");
 			
 			cfg.setTransporter(t);
 			
