@@ -1,3 +1,5 @@
+[![Javadocs](https://www.javadoc.io/badge/com.github.berkesa/moleculer-java-repl.svg)](https://www.javadoc.io/doc/com.github.berkesa/moleculer-java-repl)
+
 # REPL for Moleculer
 
 Java REPL (Interactive Developer Console) for [Moleculer](https://moleculer-java.github.io/moleculer-java/).
