@@ -2,7 +2,7 @@
 
 # REPL for Moleculer
 
-Java REPL (Interactive Developer Console) for [Moleculer](https://moleculer-java.github.io/moleculer-java/).
+Java REPL (Interactive Developer Console) for [Moleculer Microservices Framework](https://moleculer-java.github.io/moleculer-java/). The REPL console is a special Moleculer service that executes console commands. Console commands can be used to **test** Moleculer actions and event listeners or measure the **response time** of a service. It is also possible to create **custom commands**. The console can be used via standard input / output and telnet.
 
 ## Download
 
