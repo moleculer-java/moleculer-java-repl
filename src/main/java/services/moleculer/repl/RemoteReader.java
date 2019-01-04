@@ -25,6 +25,8 @@
  */
 package services.moleculer.repl;
 
+import static services.moleculer.repl.commands.Info.getSoftwareVersion;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -34,8 +36,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
-
-import services.moleculer.ServiceBroker;
 
 /**
  * TCP reader / writer for the telnet based REPL console.
@@ -80,7 +80,7 @@ public class RemoteReader {
 		this.username = username;
 		this.password = password;
 		this.loggedOn = !authenticated;
-		String header = "Moleculer Microservice Framework V" + ServiceBroker.SOFTWARE_VERSION;
+		String header = "Moleculer Microservice Framework V" + getSoftwareVersion();
 		int len = (79 - header.length()) / 2;
 		String spaces = "                                                                               ";
 		String title = spaces.substring(0, len) + header + spaces.substring(0, len);

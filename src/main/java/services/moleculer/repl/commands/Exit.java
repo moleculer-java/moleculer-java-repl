@@ -56,6 +56,8 @@ public class Exit extends Command {
 	@Override
 	public synchronized void onCommand(ServiceBroker broker, PrintWriter out, String[] parameters) throws Exception {
 		if (broker != null) {
+			out.println("Shutting down Virtual Machine...");
+			out.println();
 			ServiceBroker instance = broker;
 			broker = null;
 			try {
@@ -66,6 +68,7 @@ public class Exit extends Command {
 					} catch (Throwable ignored) {
 					}
 				}, "safetyShutdown");
+				Thread.sleep(300);
 				safetyShutdown.setDaemon(true);
 				safetyShutdown.start();
 			} catch (Throwable ignored) {

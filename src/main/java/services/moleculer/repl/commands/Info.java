@@ -43,6 +43,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.datatree.Tree;
 import io.datatree.dom.TreeReaderRegistry;
@@ -63,6 +64,18 @@ import services.moleculer.transporter.Transporter;
  */
 @Name("info")
 public class Info extends Command {
+
+	// --- CURRENT VERSIONS ---
+
+	/**
+	 * Current software version.
+	 */
+	protected static AtomicReference<String> softwareVersion = new AtomicReference<>();
+
+	/**
+	 * Current protocol version.
+	 */
+	protected static AtomicReference<String> protocolVersion = new AtomicReference<>();
 
 	// --- NUMBER FORMATTER ---
 
@@ -136,8 +149,8 @@ public class Info extends Command {
 				+ System.getProperty("java.vm.vendor", "unknown vendor"));
 		table.addRow(GRAY + "Java VM type", ": " + WHITE + System.getProperty("java.vm.name", "unknown"));
 
-		table.addRow(GRAY + "Moleculer version", ": " + WHITE + ServiceBroker.SOFTWARE_VERSION);
-		table.addRow(GRAY + "Protocol version", ": " + WHITE + ServiceBroker.PROTOCOL_VERSION);
+		table.addRow(GRAY + "Moleculer version", ": " + WHITE + getSoftwareVersion());
+		table.addRow(GRAY + "Protocol version", ": " + WHITE + getProtocolVersion());
 
 		TimeZone zone = TimeZone.getDefault();
 		int currentOffset = zone.getOffset(System.currentTimeMillis());
@@ -253,7 +266,7 @@ public class Info extends Command {
 					}
 				}
 			} catch (Exception ignored) {
-			}			
+			}
 			addType(table, "Transporter", t);
 			if (t instanceof TcpTransporter) {
 				TcpTransporter tt = (TcpTransporter) t;
@@ -263,9 +276,9 @@ public class Info extends Command {
 				table.addRow(GRAY + "UDP broadcasting", ": " + MAGENTA + tt.isUdpBroadcast());
 				table.addRow(GRAY + "UDP multicasting",
 						": " + MAGENTA + (tt.getUrls() == null || tt.getUrls().length == 0));
-				
+
 				if (tt.getUdpBindAddress() == null) {
-					table.addRow(GRAY + "Broadcast address", ": <auto>");					
+					table.addRow(GRAY + "Broadcast address", ": <auto>");
 				} else {
 					table.addRow(GRAY + "Broadcast address", ": " + GREEN + tt.getUdpBindAddress());
 				}
@@ -326,6 +339,32 @@ public class Info extends Command {
 		out.println(header);
 		out.println(line);
 		out.println();
+	}
+
+	public static final String getSoftwareVersion() {
+		String version = softwareVersion.get();
+		if (version == null) {
+			try {
+				version = (String) ServiceBroker.class.getField("SOFTWARE_VERSION").get(ServiceBroker.class);
+			} catch (Throwable ignored) {
+				version = ServiceBroker.SOFTWARE_VERSION;
+			}
+			softwareVersion.compareAndSet(null, version);
+		}
+		return version;
+	}
+
+	public static final String getProtocolVersion() {
+		String version = protocolVersion.get();
+		if (version == null) {
+			try {
+				version = (String) ServiceBroker.class.getField("PROTOCOL_VERSION").get(ServiceBroker.class);
+			} catch (Throwable ignored) {
+				version = ServiceBroker.PROTOCOL_VERSION;
+			}
+			protocolVersion.compareAndSet(null, version);
+		}
+		return version;
 	}
 
 }
