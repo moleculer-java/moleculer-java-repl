@@ -55,6 +55,9 @@ public class LocalReader extends Thread {
 					continue;
 				}
 				line.append((char) c);
+				if (line.length() > 2048) {
+					break;
+				}
 			}
 		} catch (Throwable ignored) {
 		}

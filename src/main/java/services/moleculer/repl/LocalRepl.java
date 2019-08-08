@@ -72,6 +72,8 @@ public class LocalRepl extends Repl implements Runnable {
 
 	protected ConcurrentHashMap<String, Command> commands = new ConcurrentHashMap<>(64);
 
+	protected ConcurrentHashMap<String, Command> postDefinedCommands = new ConcurrentHashMap<>();
+	
 	// --- VARIABLES ---
 
 	protected ExecutorService executor;
@@ -169,6 +171,9 @@ public class LocalRepl extends Repl implements Runnable {
 			}
 		}
 
+		// Put user-defined commands
+		commands.putAll(postDefinedCommands);
+		
 		// Start standard input reader
 		if (executor != null) {
 			try {
@@ -182,7 +187,7 @@ public class LocalRepl extends Repl implements Runnable {
 		// Log start
 		showStartMessage();
 	}
-
+	
 	protected void load(String... commands) {
 		try {
 			for (String command : commands) {
@@ -200,13 +205,18 @@ public class LocalRepl extends Repl implements Runnable {
 		logger.info(nameOf(this, true) + " started. Type \"help\" for list of commands.");
 	}
 
+	public void addCommand(Command command) {
+		String name = nameOf(command, false).toLowerCase();
+		postDefinedCommands.put(name, command);
+	}
+
 	// --- COMMAND READER LOOP ---
 
 	@Override
 	public void run() {
 		try {
 			Thread.sleep(1000);
-			while (!Thread.currentThread().isInterrupted()) {
+			while (executor != null && !Thread.currentThread().isInterrupted()) {
 				reader = new LocalReader();
 				reader.start();
 				if (reader == null) {
@@ -214,6 +224,23 @@ public class LocalRepl extends Repl implements Runnable {
 				}
 				reader.join();
 				String command = reader.getLine();
+				if (command.length() > 2048) {
+					char first = command.charAt(0);
+					boolean sameChars = true;
+					for (int i = 1; i < command.length() - 1; i++) {
+						if (command.charAt(i) != first) {
+							sameChars = false;
+							break;
+						}
+					}
+					if (sameChars) {
+						
+						// Something is wrong (eg. System.in is redirected)
+						stopReading();
+						logger.info(nameOf(this, false) + " interrupted.");
+						return;
+					}
+				}
 				reader = null;
 				if (command.length() > 0) {
 					if ("r".equalsIgnoreCase(command) || "repeat".equalsIgnoreCase(command)) {

@@ -145,7 +145,7 @@ public class RemoteRepl extends LocalRepl {
 		RemoteReader buffer;
 		Iterator<SelectionKey> keys;
 		int n;
-		while (!Thread.currentThread().isInterrupted()) {
+		while (executor != null && !Thread.currentThread().isInterrupted()) {
 
 			// Waiting for sockets
 			try {
@@ -292,7 +292,7 @@ public class RemoteRepl extends LocalRepl {
 	@Override
 	protected void stopReading() {
 		super.stopReading();
-
+		
 		// Close server-channel
 		if (selector != null) {
 			try {
@@ -306,7 +306,7 @@ public class RemoteRepl extends LocalRepl {
 			serverChannel = null;
 			selector = null;
 		}
-
+		
 		// Clear buffers
 		synchronized (buffers) {
 			if (!buffers.isEmpty()) {
