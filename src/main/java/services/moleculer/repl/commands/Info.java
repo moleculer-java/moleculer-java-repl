@@ -227,7 +227,6 @@ public class Info extends Command {
 		printHeader(out, "Broker options");
 		table = new TextTable(false, "Name", "Value");
 
-		addType(table, "Context factory", cfg.getContextFactory());
 		addType(table, "Event bus", cfg.getEventbus());
 		addType(table, "System monitor", cfg.getMonitor());
 		addType(table, "Service registry", cfg.getServiceRegistry());

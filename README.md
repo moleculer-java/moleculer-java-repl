@@ -2,7 +2,10 @@
 
 # REPL for Moleculer
 
-Java REPL (Interactive Developer Console) for [Moleculer microservices framework](https://moleculer-java.github.io/moleculer-java/). The REPL console is a special Moleculer service that executes console commands. Console commands can be used to **test** Moleculer actions and event listeners or measure the **response time** of a service. It is also possible to create **custom commands**. The console can be used via standard input / output and telnet.
+Java REPL (Interactive Developer Console) for [Moleculer microservices framework](https://moleculer-java.github.io/moleculer-java/).
+The REPL console is a special Moleculer service that executes console commands.
+Console commands can be used to **test** Moleculer actions and event listeners or measure the **response time** of a service.
+It is also possible to create **custom commands**. The console can be used via standard input / output and telnet.
 
 ## Download
 
@@ -13,7 +16,7 @@ Java REPL (Interactive Developer Console) for [Moleculer microservices framework
 	<dependency>
 		<groupId>com.github.berkesa</groupId>
 		<artifactId>moleculer-java-repl</artifactId>
-		<version>1.0.6</version>
+		<version>1.2.0</version>
 		<scope>runtime</scope>
 	</dependency>
 </dependencies>
@@ -23,7 +26,7 @@ Java REPL (Interactive Developer Console) for [Moleculer microservices framework
 
 ```gradle
 dependencies {
-	compile group: 'com.github.berkesa', name: 'moleculer-java-repl', version: '1.0.6' 
+	compile group: 'com.github.berkesa', name: 'moleculer-java-repl', version: '1.2.0' 
 }
 ```
 
