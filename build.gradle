@@ -63,7 +63,7 @@ dependencies {
     	    
 	// https://mvnrepository.com/artifact/com.github.berkesa/moleculer-java
 	// compile project(':moleculer-java')
-	compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.2.0'
+	compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.2.4'
 		
 	// --- ANSI TERMINAL ---
 	
@@ -77,8 +77,8 @@ targetCompatibility = 1.8
 
 group = 'com.github.berkesa'
 
-// version = '1.2.0-SNAPSHOT'
-version = '1.2.0'
+// version = '1.2.1-SNAPSHOT'
+version = '1.2.1'
 
 modifyPom {
     project {
@@ -106,7 +106,7 @@ modifyPom {
             dependency {
                 groupId 'com.github.berkesa'
                 artifactId 'moleculer-java'
-                version '1.2.0'
+                version '1.2.4'
                 scope 'runtime'
             }
             dependency {
@@ -148,5 +148,5 @@ compileJava {
 
 jar {
     baseName = 'moleculer-repl'
-    version =  '1.2.0'
+    version =  '1.2.1'
 }

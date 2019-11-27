@@ -141,7 +141,7 @@ public class LocalRepl extends Repl implements Runnable {
 		// Load built-in commands
 		load("Actions", "Broadcast", "BroadcastLocal", "Call", "Clear", "Close", "DCall", "Emit", "Env", "Events",
 				"Exit", "Find", "Gc", "Info", "Memory", "Nodes", "Props", "Services", "Threads", "Bench", "Debug",
-				"Ping");
+				"Ping", "Run");
 
 		// Load custom commands
 		if (packagesToScan != null && packagesToScan.length > 0) {
@@ -265,7 +265,8 @@ public class LocalRepl extends Repl implements Runnable {
 
 	// --- COMMAND PROCESSOR ---
 
-	protected void onCommand(PrintWriter out, String command) throws Exception {
+	@Override
+	public void onCommand(PrintWriter out, String command) throws Exception {
 		try {
 			if (command == null) {
 				return;

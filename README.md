@@ -16,7 +16,7 @@ It is also possible to create **custom commands**. The console can be used via s
 	<dependency>
 		<groupId>com.github.berkesa</groupId>
 		<artifactId>moleculer-java-repl</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.1</version>
 		<scope>runtime</scope>
 	</dependency>
 </dependencies>
@@ -26,7 +26,7 @@ It is also possible to create **custom commands**. The console can be used via s
 
 ```gradle
 dependencies {
-	compile group: 'com.github.berkesa', name: 'moleculer-java-repl', version: '1.2.0' 
+	compile group: 'com.github.berkesa', name: 'moleculer-java-repl', version: '1.2.1' 
 }
 ```
 
@@ -353,6 +353,16 @@ mol $ gc
 **Output**
 
 ![image](docs/gc.png)
+
+### Runs a script file
+
+```bash
+mol $ run /temp/commands.txt
+```
+
+Loads a "script" file and executes all non-empty lines as command. Skips rows
+that begin with a "comment marker" characters (hashmark, double slash or star).
+The script file must be in UTF-8.
 
 ## User-defined commands
 

@@ -150,7 +150,7 @@ public class Info extends Command {
 		table.addRow(GRAY + "Java VM type", ": " + WHITE + System.getProperty("java.vm.name", "unknown"));
 
 		table.addRow(GRAY + "Moleculer version", ": " + WHITE + getSoftwareVersion());
-		table.addRow(GRAY + "Protocol version", ": " + WHITE + getProtocolVersion());
+		table.addRow(GRAY + "Protocol version", ": " + WHITE + getProtocolVersion(broker));
 
 		TimeZone zone = TimeZone.getDefault();
 		int currentOffset = zone.getOffset(System.currentTimeMillis());
@@ -353,13 +353,21 @@ public class Info extends Command {
 		return version;
 	}
 
-	public static final String getProtocolVersion() {
+	public static final String getProtocolVersion(ServiceBroker broker) {
 		String version = protocolVersion.get();
 		if (version == null) {
 			try {
-				version = (String) ServiceBroker.class.getField("PROTOCOL_VERSION").get(ServiceBroker.class);
+				version = (String) ServiceBroker.class.getMethod("getProtocolVersion").invoke(broker);
 			} catch (Throwable ignored) {
-				version = ServiceBroker.PROTOCOL_VERSION;
+			}
+			if (version == null) {
+				try {
+					version = (String) ServiceBroker.class.getField("PROTOCOL_VERSION").get(ServiceBroker.class);
+				} catch (Throwable ignored) {
+				}
+			}
+			if (version == null) {
+				version = "4";
 			}
 			protocolVersion.compareAndSet(null, version);
 		}

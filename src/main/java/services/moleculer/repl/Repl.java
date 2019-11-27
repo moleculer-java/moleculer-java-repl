@@ -27,6 +27,8 @@ package services.moleculer.repl;
 
 import static services.moleculer.util.CommonUtils.nameOf;
 
+import java.io.PrintWriter;
+
 import io.datatree.dom.TreeWriterRegistry;
 import services.moleculer.ServiceBroker;
 import services.moleculer.service.Name;
@@ -118,6 +120,10 @@ public abstract class Repl extends Service {
 
 	protected abstract void stopReading();
 
+	// --- COMMAND PROCESSOR ---
+
+	public abstract void onCommand(PrintWriter out, String command) throws Exception;
+	
 	// --- GETTERS / SETTERS ---
 
 	public void setEnabled(boolean enabled) {
