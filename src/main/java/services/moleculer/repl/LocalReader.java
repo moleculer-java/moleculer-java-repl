@@ -34,9 +34,14 @@ public class LocalReader extends Thread {
 
 	protected StringBuilder line = new StringBuilder(80);
 
+	// --- FIRST READING ---
+	
+	protected final boolean showPrompt;
+	
 	// --- CONSTRUCTOR ---
 
-	protected LocalReader() {
+	protected LocalReader(boolean showPrompt) {
+		this.showPrompt = showPrompt;
 		setDaemon(true);
 	}
 
@@ -45,7 +50,9 @@ public class LocalReader extends Thread {
 	public void run() {
 		try {
 			int c = ' ';
-			System.out.print("mol $ ");
+			if (showPrompt) {
+				System.out.print("mol $ ");
+			}
 			for (;;) {
 				c = System.in.read();
 				if (c == '\n') {

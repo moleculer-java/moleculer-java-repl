@@ -215,9 +215,12 @@ public class LocalRepl extends Repl implements Runnable {
 	@Override
 	public void run() {
 		try {
-			Thread.sleep(1000);
+			boolean showPrompt = false;
 			while (executor != null && !Thread.currentThread().isInterrupted()) {
-				reader = new LocalReader();
+				reader = new LocalReader(showPrompt);
+				if (!showPrompt) {
+					showPrompt = true;
+				}
 				reader.start();
 				if (reader == null) {
 					return;
