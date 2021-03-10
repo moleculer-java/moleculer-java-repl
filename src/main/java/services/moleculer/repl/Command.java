@@ -38,6 +38,10 @@ import services.moleculer.util.CheckedTree;
  */
 public abstract class Command {
 
+	// --- CONSTANTS ---
+	
+	public static final String META_REPL_HEADER = "$repl";
+	
 	// --- CONSTRUCTOR ---
 
 	public Command() {
@@ -139,7 +143,9 @@ public abstract class Command {
 				if (json.endsWith("'")) {
 					json = json.substring(0, json.length() - 1);
 				}
-				return new Tree(json.trim());
+				Tree payload = new Tree(json.trim());
+				payload.getMeta().put(META_REPL_HEADER, true);
+				return payload;
 			}
 			Tree payload = new Tree();
 			String name = null;
@@ -193,9 +199,12 @@ public abstract class Command {
 					}
 				}
 			}
+			payload.getMeta().put(META_REPL_HEADER, true);
 			return payload;
 		}
-		return new Tree();
+		Tree payload = new Tree();
+		payload.getMeta().put(META_REPL_HEADER, true);
+		return payload;
 	}
 
 	// --- FORMATTERS ---
