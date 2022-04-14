@@ -30,7 +30,7 @@ import static services.moleculer.repl.ColorWriter.GRAY;
 import static services.moleculer.repl.ColorWriter.OK_COLOR;
 import static services.moleculer.repl.ColorWriter.WHITE;
 
-import java.util.Arrays;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,7 +62,7 @@ public class TextTable {
 
 	public TextTable(boolean drawGridAndHeader, String... headers) {
 		this.drawGridAndHeader = drawGridAndHeader;
-		this.headersList = Arrays.asList(headers);
+		this.headersList = arrayToList(headers);
 	}
 
 	// --- ROWS AND CELLS ---
@@ -70,11 +70,11 @@ public class TextTable {
 	private List<List<String>> rowsList = new LinkedList<>();
 
 	public void addRow(String... cells) {
-		addRow(false, Arrays.asList(cells));
+		addRow(false, arrayToList(cells));
 	}
 
 	public void addRow(boolean checkLength, String... cells) {
-		addRow(checkLength, Arrays.asList(cells));
+		addRow(checkLength, arrayToList(cells));
 	}
 
 	public void addRow(List<String> cells) {
@@ -109,6 +109,18 @@ public class TextTable {
 
 	// --- GENERATE TABLE ---
 
+	public void print() {
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter(new ColorWriter());
+			out.println(toString());			
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -230,6 +242,20 @@ public class TextTable {
 		}
 	}
 
+	protected LinkedList<String> arrayToList(String[] array) {
+		if (array == null || array.length == 0) {
+			return new LinkedList<>();
+		}
+		LinkedList<String> list = new LinkedList<>();
+		for (String value: array) {
+			if (value == null) {
+				value = "";
+			}
+			list.addLast(value);
+		}
+		return list;
+	}
+	
 	// --- SETTERS ---
 
 	public void setPadding(int padding) {
