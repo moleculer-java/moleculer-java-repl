@@ -48,22 +48,22 @@ dependencies {
     // --- LOGGING ---
     
 	// http://mvnrepository.com/artifact/org.slf4j/slf4j-api
-	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
        
 	// http://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
-	compile group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.30'
+	implementation group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.30'
 
 	// https://mvnrepository.com/artifact/org.slf4j/log4j-over-slf4j
-	compile group: 'org.slf4j', name: 'log4j-over-slf4j', version: '1.7.30'
+	implementation group: 'org.slf4j', name: 'log4j-over-slf4j', version: '1.7.30'
 
 	// https://mvnrepository.com/artifact/org.slf4j/jcl-over-slf4j
-	compile group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.30'
+	implementation group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.30'
     
     // --- MOLECULER CORE ---
     	    
 	// https://mvnrepository.com/artifact/com.github.berkesa/moleculer-java
 	// compile project(':moleculer-java')
-	compile group: 'com.github.berkesa', name: 'moleculer-java', version: '1.2.23'
+	implementation group: 'com.github.berkesa', name: 'moleculer-java', version: '1.2.24'
 		
 	// --- ANSI TERMINAL ---
 	
@@ -107,7 +107,7 @@ modifyPom {
             dependency {
                 groupId 'com.github.berkesa'
                 artifactId 'moleculer-java'
-                version '1.2.23'
+                version '1.2.24'
                 scope 'runtime'
             }
             dependency {
