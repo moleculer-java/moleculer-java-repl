@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Sample (REPL console)",
+      "request": "launch",
+      "mainClass": "services.moleculer.repl.Sample",
+      "projectName": "moleculer-java-repl",
+      "args": ""
+    }
+  ]
+}

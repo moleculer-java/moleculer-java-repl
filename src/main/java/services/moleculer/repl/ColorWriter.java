@@ -32,13 +32,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.StringTokenizer;
 
-import com.diogonunes.jcdp.color.ColoredPrinter;
-import com.diogonunes.jcdp.color.api.Ansi.Attribute;
-import com.diogonunes.jcdp.color.api.Ansi.BColor;
-import com.diogonunes.jcdp.color.api.Ansi.FColor;
+import com.diogonunes.jcolor.Ansi;
+import com.diogonunes.jcolor.Attribute;
 
 /**
- * Writer with built-in color code parser. Compatible with JCDP 3.0.4 (and higher).
+ * Writer with built-in color code parser. Renders the local console via JColor
+ * ({@code com.diogonunes.jcolor}) and telnet sessions via raw ANSI escapes.
  */
 public class ColorWriter extends Writer {
 
@@ -54,20 +53,19 @@ public class ColorWriter extends Writer {
 	public static final String OK_COLOR = "§=";
 	public static final String FAIL_COLOR = "§÷";
 
-	protected final ColoredPrinter coloredPrinter;
+	// When null, output goes to the local System.out console (colorized with
+	// JColor); otherwise it goes to this telnet stream (colorized with raw ANSI).
 	protected final PrintStream printStream;
 
 	// --- CONNSTRUCTOR FOR LOCAL CONSOLE ---
 
 	public ColorWriter() {
-		coloredPrinter = new ColoredPrinter.Builder(1, false).build();
 		printStream = null;
 	}
 
 	// --- CONNSTRUCTOR FOR TELNET CONSOLE ---
 
 	public ColorWriter(PrintStream stream) {
-		coloredPrinter = null;
 		printStream = Objects.requireNonNull(stream);
 	}
 
@@ -77,23 +75,23 @@ public class ColorWriter extends Writer {
 	public void write(char[] cbuf, int off, int len) throws IOException {
 		String text = new String(cbuf, off, len);
 		text = text.replace((char) 160, ' ');
-		if (coloredPrinter != null) {
+		if (printStream == null) {
 
 			// --- LOCAL CONSOLE ---
-			
+
 			// Loop on lines
 			ArrayList<Line> lines = splitToLines(text);
 			for (Line line: lines) {
-				
+
 				// Loop on tokens
 				StringTokenizer st = new StringTokenizer(line.content, "§", true);
 				if (printLineFeed(line, st)) {
 					continue;
 				}
 				boolean wasDelimiter = false;
-				FColor fc = FColor.WHITE;
-				BColor bg = BColor.NONE;
-				Attribute attr = Attribute.NONE;
+				Attribute fc = null;
+				Attribute bg = null;
+				Attribute style = null;
 				while (st.hasMoreTokens()) {
 					String token = st.nextToken();
 					if (token.length() > 0 && wasDelimiter) {
@@ -107,55 +105,55 @@ public class ColorWriter extends Writer {
 						switch (type) {
 
 						case '+':
-							fc = FColor.WHITE;
-							attr = Attribute.LIGHT;
+							fc = Attribute.WHITE_TEXT();
+							style = Attribute.BOLD();
 							break;
 
 						case '!':
-							fc = FColor.YELLOW;
-							attr = Attribute.LIGHT;
+							fc = Attribute.YELLOW_TEXT();
+							style = Attribute.BOLD();
 							break;
 
 						case '\'':
-							fc = FColor.GREEN;
-							attr = Attribute.LIGHT;
+							fc = Attribute.GREEN_TEXT();
+							style = Attribute.BOLD();
 							break;
 
 						case '%':
-							fc = FColor.WHITE;
-							bg = BColor.NONE;
-							attr = Attribute.CLEAR;
+							fc = Attribute.WHITE_TEXT();
+							bg = null;
+							style = Attribute.DIM();
 							break;
 
 						case '$':
-							fc = FColor.CYAN;
-							attr = Attribute.LIGHT;
+							fc = Attribute.CYAN_TEXT();
+							style = Attribute.BOLD();
 							break;
 
 						case '~':
-							fc = FColor.MAGENTA;
-							attr = Attribute.LIGHT;
+							fc = Attribute.MAGENTA_TEXT();
+							style = Attribute.BOLD();
 							break;
 
 						case '=':
-							bg = BColor.GREEN;
+							bg = Attribute.GREEN_BACK();
 							break;
 
 						case '÷':
-							bg = BColor.RED;
+							bg = Attribute.RED_BACK();
 							break;
 
 						default:
-							coloredPrinter.print("§" + token);
+							System.out.print("§" + token);
 							continue;
 						}
 						if (line.lineFeed && !st.hasMoreTokens()) {
 							if (token.isEmpty()) {
 								token = " ";
 							}
-							coloredPrinter.println(token, attr, fc, bg);
+							System.out.println(colorize(token, fc, style, bg));
 						} else {
-							coloredPrinter.print(token, attr, fc, bg);							
+							System.out.print(colorize(token, fc, style, bg));
 						}
 					} else if ("§".equals(token)) {
 						wasDelimiter = true;
@@ -167,20 +165,18 @@ public class ColorWriter extends Writer {
 							if (token.isEmpty()) {
 								token = " ";
 							}
-							coloredPrinter.println(token);
+							System.out.println(token);
 						} else {
-							coloredPrinter.print(token);							
-						}						
+							System.out.print(token);
+						}
 						continue;
 					}
 				}
 			}
 			if (text.indexOf('§') > -1) {
-				coloredPrinter.setAttribute(Attribute.NONE);
-				coloredPrinter.setBackgroundColor(BColor.NONE);
-				coloredPrinter.setForegroundColor(FColor.NONE);
+				System.out.print(Ansi.RESET);
 			}
-			
+
 		} else {
 
 			// --- TELNET CONSOLE ---
@@ -261,10 +257,34 @@ public class ColorWriter extends Writer {
 
 	protected boolean printLineFeed(Line line, StringTokenizer st) {
 		if (line.lineFeed && !st.hasMoreTokens()) {
-			coloredPrinter.println(" ");
+			System.out.println(" ");
 			return true;
 		}
 		return false;
+	}
+
+	// --- JCOLOR HELPER (LOCAL CONSOLE) ---
+
+	/**
+	 * Wraps {@code token} in ANSI escapes for the supplied (nullable) text color,
+	 * text style, and background color using JColor. Returns the plain token when
+	 * no attribute applies.
+	 */
+	protected String colorize(String token, Attribute textColor, Attribute textStyle, Attribute background) {
+		ArrayList<Attribute> attributes = new ArrayList<>(3);
+		if (textColor != null) {
+			attributes.add(textColor);
+		}
+		if (textStyle != null) {
+			attributes.add(textStyle);
+		}
+		if (background != null) {
+			attributes.add(background);
+		}
+		if (attributes.isEmpty()) {
+			return token;
+		}
+		return Ansi.colorize(token, attributes.toArray(new Attribute[0]));
 	}
 	
 	protected ArrayList<Line> splitToLines(String text) {		
