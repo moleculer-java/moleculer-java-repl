@@ -367,7 +367,9 @@ public class Info extends Command {
 				}
 			}
 			if (version == null) {
-				version = "4";
+				// Defensive fallback (unreachable against moleculer-java, whose
+				// getProtocolVersion() always resolves); "5" matches the 2.0.0 default.
+				version = "5";
 			}
 			protocolVersion.compareAndSet(null, version);
 		}

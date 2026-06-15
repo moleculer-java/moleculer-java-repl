@@ -1,5 +1,3 @@
-[![Javadocs](https://www.javadoc.io/badge/com.github.berkesa/moleculer-java-repl.svg)](https://www.javadoc.io/doc/com.github.berkesa/moleculer-java-repl)
-
 ## REPL Developer Console for Moleculer
 
 The REPL console is a special Moleculer `Service` that executes console commands.

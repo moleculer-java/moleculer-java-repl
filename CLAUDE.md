@@ -13,9 +13,9 @@ running `ServiceBroker`.
 ## Build & run
 
 Maven project, **JDK 21** (`<maven.compiler.release>21</maven.compiler.release>`), `groupId = com.github.berkesa`,
-`version = 2.0.0`. Built with plain `javac` via `maven-compiler-plugin` (the old ECJ/Gradle build is gone). The
-published artifact is `com.github.berkesa:moleculer-java-repl`; the jar file is now named after the artifactId
-(`moleculer-java-repl-<version>.jar`, was `moleculer-repl-…` under Gradle).
+`version = 2.0.0`. Built with plain `javac` via `maven-compiler-plugin`. The
+published artifact is `com.github.berkesa:moleculer-java-repl`; the jar file is named after the artifactId
+(`moleculer-java-repl-<version>.jar`).
 
 ```bash
 mvn clean install                 # compile + test + install to local ~/.m2
@@ -74,7 +74,6 @@ or `.waitFor()` to block. `CallOptions` carries timeout/nodeID (e.g. `dcall` tar
 
 **Colored output.** Do not emit raw ANSI. Prefix strings with `ColorWriter` color constants (e.g.
 `ColorWriter.YELLOW` = `"§!"`, `GREEN`, `CYAN`, `GRAY`, ...). `ColorWriter` translates the `§`-codes to colors for
-the local console via **JColor** (`com.diogonunes.jcolor`, `Ansi.colorize(text, Attribute…)` — migrated from the
-old JCDP 3.x `ColoredPrinter`) and to raw ANSI escapes for telnet. For JSON, call `tree.toString("colorized-json", ...)` —
+the local console via **JColor** (`com.diogonunes.jcolor`, `Ansi.colorize(text, Attribute…)`) and to raw ANSI escapes for telnet. For JSON, call `tree.toString("colorized-json", ...)` —
 `JsonColorizer` is registered as a datatree `TreeWriter` named `"colorized-json"` in `Repl`'s static initializer.
 `TextTable` renders aligned tables (used for the `help` listing).
