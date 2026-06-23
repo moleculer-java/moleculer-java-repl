@@ -49,7 +49,7 @@ installed like any service: `broker.createService("$repl", new LocalRepl())`, or
   dispatches to commands, prints help, and suggests a command on typos. `r`/`repeat` re-runs the last command;
   `q` maps to `exit`.
 - **`RemoteRepl`** — overrides the reader loop with a non-blocking NIO telnet server (default port 23, max 8
-  sessions, username/password `admin`/`admin` — **change via `setPassword()`**; connection is not encrypted).
+  sessions, with built-in default credentials that **must be changed via `setPassword()`**; connection is not encrypted).
   Uses `RemoteReader` per connection.
 
 **Commands.** Every command extends the abstract `Command` (in `services.moleculer.repl`) and lives in
