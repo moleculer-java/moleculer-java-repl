@@ -41,7 +41,7 @@ Use `RemoteRepl` instead of `LocalRepl` to expose the console over telnet.
 
 ## Requirements
 
-Java 21 or newer.
+Java 17 or newer.
 
 ## License
 
