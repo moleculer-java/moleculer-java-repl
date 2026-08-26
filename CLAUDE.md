@@ -12,7 +12,7 @@ running `ServiceBroker`.
 
 ## Build & run
 
-Maven project, bytecode target **Java 17** (`<maven.compiler.release>17</maven.compiler.release>`), build JDK 17+ (JDK 25 in use). Minimum consumer runtime: **JDK 17** (Spring 6 transitive via moleculer-java). `groupId = com.github.berkesa`, `version = 2.0.0`. Built with plain `javac` via `maven-compiler-plugin`. The
+Maven project, bytecode target **Java 17** (`<maven.compiler.release>17</maven.compiler.release>`), build JDK 17+ (JDK 25 in use). Minimum consumer runtime: **JDK 17** (Spring 6 transitive via moleculer-java). `groupId = com.github.berkesa`, `version = 2.1.0`. Built with plain `javac` via `maven-compiler-plugin`. The
 published artifact is `com.github.berkesa:moleculer-java-repl`; the jar file is named after the artifactId
 (`moleculer-java-repl-<version>.jar`).
 
@@ -23,7 +23,7 @@ mvn -Prelease clean deploy        # sources+javadoc+GPG sign + Central Portal pu
 ```
 
 When bumping the version, change it in **two** places in `pom.xml`: the top-level `<version>` and (when not using
-the workspace lockstep `2.0.0`) the `com.github.berkesa:moleculer-java` dependency `<version>`. Both are `2.0.0`.
+the workspace lockstep `2.1.0`) the `com.github.berkesa:moleculer-java` dependency `<version>`. Both are `2.1.0`.
 
 ## Testing
 
